@@ -123,7 +123,11 @@ corregir alguna cosa, vegeu [Si alguna cosa falla](#si-alguna-cosa-falla).
 2. `python3 -m unittest discover -s tests`: tot en verd.
 3. Regenera el repositori de pràctica:
    `python3 generador/build.py --out sortida/git-rocinante`.
-4. **Abans que ningú de fora n'hagi fet el fork**, publica'l de nou:
+4. **Abans que ningú de fora n'hagi fet el fork**, publica'l de nou. GitLab
+   protegeix `main` i no hi deixa fer `--force`: primer activa *Allowed to
+   force push* a *Settings → Repository → Protected branches* (i torna-ho a
+   desactivar en acabar). Si no, GitLab rebutja **totes** les branques del
+   push, però sí que actualitza els tags, i el repositori queda inconsistent.
 
    ```bash
    cd sortida/git-rocinante
