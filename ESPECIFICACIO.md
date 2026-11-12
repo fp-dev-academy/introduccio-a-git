@@ -79,6 +79,15 @@ LICENSE  LICENSE-docs                 # des del primer commit
 .gitignore                            # a main a partir del commit posterior a pas-01
 ```
 
+Estat inicial de l'aplicació (a `pas-00`):
+
+- `TRIPULACIO`: llista literal de diccionaris `{"nom": ..., "rol": ...}` amb els quatre
+  tripulants, perquè l'alumne s'hi pugui afegir copiant una línia i perquè `verifica.py` la
+  pugui llegir amb `ast.literal_eval` sense executar el codi de l'alumne.
+- `calcula_consum(massa_t, acceleracio_g)` → `massa_t * acceleracio_g * 0.8`.
+- `temps_trajecte(distancia_km, velocitat_kms)` → hores: `distancia_km / velocitat_kms / 3600`.
+- Els tests fan servir `unittest` i s'executen amb `python tests/test_x.py` (codi 0 o 1).
+
 `LICENSE` (MIT, per al codi) i `LICENSE-docs` (CC BY-SA 4.0, per als textos `README.md`,
 `REPTE.md` i `PISTES.md`) segueixen la decisió 0006 del grup. Formen part del primer commit, i
 cap commit posterior no els toca.
@@ -288,7 +297,7 @@ de Python.
 ### Pas 06 — Algú ha trencat la navegació
 
 - **Narrativa:** mentre resolies el conflicte, la tripulació ha fet 16 commits. Ara
-  `temps_trajecte()` dona temps 10 vegades massa petits. Alex jura que no ha estat ell.
+  `temps_trajecte()` dona temps 10 vegades massa grans. Alex jura que no ha estat ell.
 - **Aprenentatge:** `bisect` manual i `git bisect run`, `bisect reset`, `revert` d'un commit antic.
 - **Estat inicial:**
   - El tag `v1.0` apunta al commit de merge amb què Naomi integra les dues branques
