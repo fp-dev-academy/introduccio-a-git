@@ -42,6 +42,15 @@ El repositori guia es genera i **no s'edita mai a mà**.
 | [`ESPECIFICACIO.md`](ESPECIFICACIO.md) | Font de veritat: passos, estats inicials i criteris de verificació |
 | [`CLAUDE.md`](CLAUDE.md) | Regles del generador, del verificador i definició de feina acabada |
 
+### Desenvolupament
+
+Cal Python 3.12 o superior i git. No hi ha cap dependència externa.
+
+```bash
+python3 generador/build.py --out sortida/git-rocinante   # genera el repositori guia
+python3 -m unittest discover -s tests -v                 # executa els tests
+```
+
 ## Llicència
 
 - Codi: [MIT](LICENSE).
