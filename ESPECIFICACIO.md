@@ -380,5 +380,5 @@ Cal especificar-los amb el mateix nivell de detall abans d'implementar-los.
   El pas 00 ho ha de comprovar, i el `README.md` ha d'indicar l'alternativa.
 - `notepad` com a editor funciona des de Git Bash per a `commit` sense `-m` i per al missatge del merge.
 - GitLab copia tots els tags i les branques `tripulacio/*` en fer el fork (el pas 00 ho comprova).
-- Els identificadors en català de l'aplicació són una excepció didàctica a la convenció del
-  grup (identificadors en anglès). Cal recollir-ho en una decisió de `comu/decisions/`.
+- Els identificadors en català són una excepció didàctica a la convenció del grup
+  (identificadors en anglès): vegeu la decisió 0007 de `comu` (estat: proposada).

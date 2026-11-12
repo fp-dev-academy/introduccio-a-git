@@ -70,7 +70,8 @@ tests/
 ## Codi de l'aplicació Rocinante
 
 - Paquet `rocinante/`, CLI `python -m rocinante`. Només biblioteca estàndard. Menys de 300 línies en total.
-- Identificadors en català i sense accents (`calcula_consum`, `tripulacio`).
+- Identificadors en català i sense accents (`calcula_consum`, `tripulacio`), també a
+  `verifica.py` i al generador: decisió 0007 de `comu`.
 - Tests **sense pytest**: `tests/test_*.py` executables amb `python tests/test_x.py`, amb codi
   de sortida 0 o 1 (necessari per a `git bisect run` sense dependències).
 - El codi és l'excusa, no el focus: ha de ser senzill i llegible.
