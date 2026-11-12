@@ -79,7 +79,7 @@ class TestVerificador(unittest.TestCase):
                               capture_output=True, encoding="utf-8")
 
     def test_solucions_correctes_superen_la_verificacio(self) -> None:
-        scripts = sorted(SOLUCIONS.glob("pas_*_ok.sh"))
+        scripts = sorted(SOLUCIONS.glob("pas_*_ok*.sh"))
         self.assertTrue(scripts, "no hi ha cap solució correcta")
         for script in scripts:
             pas = script.name.split("_")[1]
@@ -103,7 +103,7 @@ class TestVerificador(unittest.TestCase):
                                 f"cap línia [FALLA] conté «{text}»:\n{resultat.stdout}")
 
     def test_cada_pas_amb_solucio_te_almenys_una_solucio_incorrecta(self) -> None:
-        passos_ok = {s.name.split("_")[1] for s in SOLUCIONS.glob("pas_*_ok.sh")}
+        passos_ok = {s.name.split("_")[1] for s in SOLUCIONS.glob("pas_*_ok*.sh")}
         passos_ko = {s.name.split("_")[1] for s in SOLUCIONS.glob("pas_*_ko_*.sh")}
         self.assertEqual(passos_ok, passos_ko)
 

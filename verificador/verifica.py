@@ -13,6 +13,7 @@ pas no existeix).
 """
 
 import ast
+import hashlib
 import re
 import subprocess
 import sys
@@ -24,6 +25,10 @@ URL_GUIA_SSH = "git@gitlab.com:fp-dev-academy/git-rocinante.git"
 
 # L'omple el generador amb tots els tags del curs.
 TAGS_DEL_CURS: tuple[str, ...] = ()
+
+# L'omple el generador: SHA-256 de les respostes esperades, ja normalitzades,
+# per a cada "pas.clau". No hi ha cap resposta en clar.
+RESPOSTES: dict[str, tuple[str, ...]] = {}
 
 
 class ErrorEntorn(Exception):
@@ -134,6 +139,71 @@ def llista_literal(referencia: str, fitxer: str, nom: str):
     return None
 
 
+def funcions_definides(referencia: str, fitxer: str) -> set[str] | None:
+    """Noms de les funcions d'un fitxer a una referència, o None si no compila."""
+    try:
+        arbre = ast.parse(sortida("show", f"{referencia}:{fitxer}"))
+    except SyntaxError:
+        return None
+    return {n.name for n in arbre.body if isinstance(n, ast.FunctionDef)}
+
+
+def en_detached_head() -> bool:
+    return git("symbolic-ref", "--quiet", "HEAD").returncode != 0
+
+
+# --- Fitxers de respostes ----------------------------------------------
+
+def normalitza_nom(valor: str) -> str:
+    return " ".join(valor.lower().split())
+
+
+def normalitza_hash(valor: str) -> str:
+    valor = valor.strip().lower()
+    return valor[:7] if re.fullmatch(r"[0-9a-f]{7,40}", valor) else ""
+
+
+def sha256(valor: str) -> str:
+    return hashlib.sha256(valor.encode("utf-8")).hexdigest()
+
+
+def llegeix_respostes(text: str) -> tuple[dict[str, str], list[str]]:
+    """Parelles clau=valor d'un fitxer de respostes, i les línies mal formades."""
+    respostes, errors = {}, []
+    for linia in text.lstrip("\ufeff").splitlines():
+        linia = linia.strip()
+        if not linia or linia.startswith("#"):
+            continue
+        clau, igual, valor = linia.partition("=")
+        if not igual or not clau.strip():
+            errors.append(linia)
+            continue
+        respostes[clau.strip()] = valor.strip()
+    return respostes, errors
+
+
+def criteris_de_respostes(numero: str, normalitzadors: dict, pistes: dict) -> list[Resultat]:
+    """Un criteri per a la versió del fitxer i un per a cada clau esperada."""
+    ruta = f"respostes/pas-{numero}.txt"
+    if ruta not in fitxers_a_head():
+        return [criteri(False, f"{ruta} versionat",
+                        f"Crea {ruta} i fes-ne commit (git add {ruta}).")]
+    respostes, errors = llegeix_respostes(sortida("show", f"HEAD:{ruta}"))
+    resultats = [criteri(not errors, f"{ruta} versionat i amb format clau=valor",
+                         f"Línia no vàlida: «{errors[0]}». Exemple: "
+                         f"{next(iter(normalitzadors))}=valor" if errors else "")]
+    for clau, normalitza in normalitzadors.items():
+        if clau not in respostes:
+            resultats.append(criteri(False, f"{clau} correcte",
+                                     f"Falta la clau {clau} a {ruta}."))
+            continue
+        valor = normalitza(respostes[clau])
+        esperats = RESPOSTES.get(f"{numero}.{clau}", ())
+        resultats.append(criteri(bool(valor) and sha256(valor) in esperats,
+                                 f"{clau} correcte", pistes[clau]))
+    return resultats
+
+
 # --- Passos --------------------------------------------------------------
 # Cada pas va entre les marques `# >>> pas NN` i `# <<< pas NN`: el generador
 # esborra els passos posteriors al tag on es publica verifica.py.
@@ -219,6 +289,35 @@ def verifica_pas_01(repo: Path) -> list[Resultat]:
 # <<< pas 01
 
 
+# >>> pas 02
+@pas("02", "La caixa negra")
+def verifica_pas_02(repo: Path) -> list[Resultat]:
+    if not es_avantpassat("pas-02"):
+        return [criteri(False, "la branca parteix de pas-02",
+                        "git switch -c treball/pas-02 pas-02")]
+    funcions = funcions_definides("HEAD", "rocinante/navegacio.py")
+    resultats = criteris_de_respostes(
+        "02",
+        {"autor_esborrat": normalitza_nom, "hash_afegit": normalitza_hash},
+        {"autor_esborrat": "Busca el commit que va esborrar la funció: "
+                           "git log --oneline -- rocinante/navegacio.py i git show <hash>",
+         "hash_afegit": "Hash curt (7 caràcters) del commit que va AFEGIR la funció, "
+                        "no del que la va esborrar."},
+    )
+    return resultats + [
+        criteri(funcions is not None and "rumb_emergencia" in funcions,
+                "rumb_emergencia existeix a rocinante/navegacio.py",
+                "git restore --source=<hash_afegit> rocinante/navegacio.py i fes commit."
+                if funcions is not None else
+                "rocinante/navegacio.py té un error de sintaxi."),
+        criteri(bool(commits_nous("pas-02")), "almenys un commit nou sobre pas-02",
+                "Fes commit dels canvis."),
+        criteri(not en_detached_head(), "no estàs en detached HEAD",
+                "Torna a la teva branca: git switch treball/pas-02"),
+    ]
+# <<< pas 02
+
+
 # --- Programa principal ----------------------------------------------------
 
 def arrel_del_repositori() -> Path:
@@ -236,7 +335,10 @@ def main(arguments: list[str]) -> int:
     if numero not in PASSOS:
         disponibles = ", ".join(sorted(PASSOS))
         raise ErrorEntorn(f"El pas {arguments[0]} no existeix en aquesta versió de "
-                          f"verifica.py. Passos disponibles: {disponibles}.")
+                          f"verifica.py. Passos disponibles: {disponibles}.\n"
+                          f"Si has fet un reset a un commit anterior al pas, verifica.py "
+                          f"també ha tornat enrere. Torna a començar el pas:\n"
+                          f"  git switch -C treball/pas-{numero} pas-{numero}")
     repo = arrel_del_repositori()
     titol, funcio = PASSOS[numero]
     print(f"Pas {numero} - {titol}\n")

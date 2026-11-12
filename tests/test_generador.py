@@ -15,6 +15,7 @@ BUILD = ARREL / "generador" / "build.py"
 TITOLS = {
     "pas-00": "Embarcament",
     "pas-01": "Primera entrada al diari",
+    "pas-02": "La caixa negra",
 }
 
 
@@ -175,6 +176,40 @@ class TestBuild(unittest.TestCase):
                 for test in sorted(Path(directori, "tests").glob("test_*.py")):
                     resultat = executa(Path(directori), str(test))
                     self.assertEqual(resultat.returncode, 0, f"{test.name}: {resultat.stderr}")
+
+    def _commits_rumb_emergencia(self) -> list[str]:
+        """Commits fins a pas-02 que afegeixen o esborren rumb_emergencia (antic → nou)."""
+        return git(self.repo, "log", "--reverse", "--format=%H", "-S", "rumb_emergencia",
+                   "pas-02", "--", "rocinante/navegacio.py").splitlines()
+
+    def test_pas_02_alex_afegeix_el_rumb_i_amos_l_esborra_3_commits_despres(self) -> None:
+        commits = self._commits_rumb_emergencia()
+        self.assertEqual(len(commits), 2)
+        afegit, esborrat = commits
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", afegit), "Alex Kamal")
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an|%s", esborrat),
+                         "Amos Burton|refactor: neteja codi mort")
+        self.assertEqual(git(self.repo, "rev-list", "--count", f"{afegit}..{esborrat}"), "3")
+        self.assertNotIn("def rumb_emergencia",
+                         git(self.repo, "show", "pas-02:rocinante/navegacio.py"))
+
+    def test_pas_02_navegacio_nomes_canvia_quan_s_esborra_la_funcio(self) -> None:
+        afegit, esborrat = self._commits_rumb_emergencia()
+        canvis = git(self.repo, "log", "--format=%H", f"{afegit}..pas-02",
+                     "--", "rocinante/navegacio.py").splitlines()
+        self.assertEqual(canvis, [esborrat])
+
+    def test_pas_02_alex_recupera_el_rumb_just_despres_del_tag(self) -> None:
+        commit = git(self.repo, "rev-list", "--reverse", "pas-02..HEAD").splitlines()[0]
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", commit), "Alex Kamal")
+        self.assertIn("def rumb_emergencia",
+                      git(self.repo, "show", f"{commit}:rocinante/navegacio.py"))
+
+    def test_pas_02_les_respostes_no_surten_en_clar_a_verifica(self) -> None:
+        afegit, _ = self._commits_rumb_emergencia()
+        verifica = git(self.repo, "show", "pas-02:verifica.py").lower()
+        self.assertNotIn(afegit[:7], verifica)
+        self.assertNotIn("amos", verifica)
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")

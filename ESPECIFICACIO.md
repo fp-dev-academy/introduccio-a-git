@@ -220,7 +220,10 @@ de Python.
   - `rumb_emergencia` existeix a `navegacio.py` a `HEAD`.
   - `pas-02` és avantpassat de `HEAD` i hi ha almenys un commit nou (no s'ha reescrit la història).
   - `HEAD` no està en detached HEAD.
-- **Nota:** el pas 02 ha de quedar resoluble també amb `git log -S rumb_emergencia`. Les `PISTES.md` ho mencionen com a pista final.
+- **Nota:** el pas 02 ha de quedar resoluble també amb
+  `git log -S rumb_emergencia -- rocinante/navegacio.py`. Les `PISTES.md` ho mencionen com a
+  pista final. Cal la ruta: `REPTE.md`, `PISTES.md` i `verifica.py` també mencionen la funció, i
+  sense la ruta la cerca en trobaria el commit.
 
 ### Pas 03 — Esborrar les proves
 
