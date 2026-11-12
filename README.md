@@ -1,5 +1,7 @@
 # Introducció a Git · La Rocinante
 
+[![pipeline](https://gitlab.com/fp-dev-academy/introduccio-a-git/badges/main/pipeline.svg)](https://gitlab.com/fp-dev-academy/introduccio-a-git/-/pipelines)
+
 Curs pràctic de **Git per terminal** per a alumnat de 2n de CFGS de
 **Desenvolupament d'Aplicacions Multiplataforma (DAM)**, pensat per a una
 sessió de 2 hores. El fil narratiu és el diari de bord de la Rocinante
@@ -50,6 +52,8 @@ Cal Python 3.12 o superior i git. No hi ha cap dependència externa.
 python3 generador/build.py --out sortida/git-rocinante   # genera el repositori guia
 python3 -m unittest discover -s tests -v                 # executa els tests
 ```
+
+La CI (`.gitlab-ci.yml`) executa els mateixos tests amb Python 3.12 i 3.15.
 
 ## Llicència
 
