@@ -75,6 +75,7 @@ tests/
   test_combustible.py
   test_navegacio.py
 README.md  REPTE.md  PISTES.md  verifica.py  .gitattributes
+ORDRES.md                             # xuleta d'ordres del curs, des de pas-00
 LICENSE  LICENSE-docs                 # des del primer commit
 .gitignore                            # a main a partir del commit posterior a pas-01
 ```
@@ -97,6 +98,14 @@ cap commit posterior no els toca.
 - `main`: història completa fins a l'últim pas.
 - Tags `pas-00` … `pas-07` sobre `main`, i `v1.0` (vegeu el pas 06).
 - `tripulacio/naomi-eficiencia` i `tripulacio/amos-potencia`, que surten de `pas-05` (vegeu el pas 05).
+
+### Xuleta d'ordres (`ORDRES.md`)
+
+Referència de totes les ordres de git que surten als `REPTE.md` i als `PISTES.md`, agrupades
+per tema i amb el pas on apareixen, i una taula de «què vull desfer → quina ordre». És a
+`pas-00` i no canvia (el `README.md` hi enllaça). Un test comprova que hi és cada subordre
+`git <ordre>` que surt en algun enunciat o pista: qui afegeixi una ordre a un pas l'ha
+d'afegir també a la xuleta.
 
 ### Coherència de `main` entre passos
 

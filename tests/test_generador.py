@@ -384,6 +384,24 @@ class TestBuild(unittest.TestCase):
         self.assertEqual(git(self.repo, "rev-parse", "main"),
                          git(self.repo, "rev-parse", "pas-07^{commit}"))
 
+    def test_la_xuleta_d_ordres_hi_es_des_del_pas_00_i_no_canvia(self) -> None:
+        self.assertIn("ORDRES.md", git(self.repo, "ls-tree", "--name-only", "pas-00").splitlines())
+        self.assertEqual(git(self.repo, "log", "--format=%H", "pas-00..HEAD", "--", "ORDRES.md"), "")
+        self.assertIn("(ORDRES.md)", git(self.repo, "show", "pas-00:README.md"))
+
+    def test_la_xuleta_conte_cada_ordre_dels_enunciats(self) -> None:
+        xuleta = git(self.repo, "show", "HEAD:ORDRES.md")
+        textos = sorted((ARREL / "contingut").glob("pas_*/*.md"))
+        self.assertTrue(textos)
+        ordres = set()
+        for text in textos:
+            ordres |= set(re.findall(r"(?:^|`|\s)(git [a-z][a-z-]+)", text.read_text(encoding="utf-8"),
+                                     re.M))
+        self.assertTrue(ordres)
+        for ordre in sorted(ordres):
+            with self.subTest(ordre=ordre):
+                self.assertIn(f"`{ordre}", xuleta)
+
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")
         canvis = git(self.repo, "log", "--format=", "--name-only",

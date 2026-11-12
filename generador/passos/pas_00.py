@@ -27,7 +27,7 @@ def build(repo: Repo) -> None:
     copia(repo, "pas_00", "rocinante/tripulacio.py", "rocinante/__main__.py")
     repo.commit("feat: afegeix la tripulació i la línia d'ordres", "holden")
 
-    copia(repo, "pas_00", "README.md")
+    copia(repo, "pas_00", "README.md", "ORDRES.md")
     repo.commit("docs: explica com funciona el diari de bord", "holden")
 
     copia(repo, "pas_00", "REPTE.md", "PISTES.md")

@@ -49,7 +49,7 @@ tests/
 - Tags anotats `pas-NN` amb el missatge `Pas NN - <títol>`. Tag addicional `v1.0` (vegeu el pas 06).
 - Les branques d'escenari van sota `tripulacio/` (p. ex. `tripulacio/naomi-eficiencia`).
 - **Les branques d'escenari i els commits de farciment no toquen mai `README.md`, `REPTE.md`,
-  `PISTES.md` ni `verifica.py`.** Els conflictes només han d'aparèixer on l'especificació diu.
+  `PISTES.md`, `ORDRES.md` ni `verifica.py`.** Els conflictes només han d'aparèixer on l'especificació diu.
 - `build.py` és idempotent: esborra i recrea el directori de sortida.
 - El generador **no** fa push. La publicació la fa el docent manualment.
 

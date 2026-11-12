@@ -45,7 +45,8 @@ python verifica.py NN                 # comprova el resultat
 ```
 
 Canvia `NN` pel número del pas (`01`, `02`...). Si et quedes encallat,
-llegeix `PISTES.md`.
+llegeix `PISTES.md`. Totes les ordres del curs són a la
+[xuleta d'ordres](ORDRES.md).
 
 Cada pas parteix del seu propi tag: encara que un pas anterior et surti
 malament, pots fer el següent. Si vols tornar a començar un pas des de zero:

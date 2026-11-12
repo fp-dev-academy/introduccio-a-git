@@ -53,7 +53,8 @@ Encara no. Revisa les pistes o llegeix PISTES.md.
 ```
 
 Encallat? Cada pas té un `PISTES.md`, ordenat de la pista més suau a la
-més concreta. Vols tornar a començar? `git switch -C treball/pas-NN pas-NN`.
+més concreta, i totes les ordres del curs són a una
+[xuleta](contingut/pas_00/ORDRES.md) (`ORDRES.md` al repositori de pràctica). Vols tornar a començar? `git switch -C treball/pas-NN pas-NN`.
 Cada pas parteix del seu propi tag, de manera que pots saltar-te'n un.
 
 ## Els reptes
@@ -119,7 +120,9 @@ Un canvi està acabat quan:
 - el generador continua sent determinista;
 - la solució correcta de cada pas afectat supera `verifica.py` i cada
   solució incorrecta hi falla amb el missatge esperat;
-- la CI és verda.
+- la CI és verda;
+- la [prova manual](PROVA-MANUAL.md) no hi troba res a corregir (GitLab,
+  Windows i PyCharm, que els tests no poden comprovar).
 
 Les regles detallades són a [`CLAUDE.md`](CLAUDE.md).
 
