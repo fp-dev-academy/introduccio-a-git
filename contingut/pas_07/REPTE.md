@@ -15,7 +15,7 @@ teu fork de GitLab i demanar que algú la revisi.
 1. Puja a `origin` totes les teves branques `treball/pas-*`.
 2. Obre una **merge request** dins del **teu fork**, de `treball/pas-05` cap
    a `main`.
-3. Demana a un company que la revisi i hi deixi un comentari.
+3. Demana a algú que la revisi i hi deixi un comentari.
 
 ## El que necessitaràs
 
@@ -66,8 +66,10 @@ No la fusionis: només és per revisar-la.
 
 ### La revisió
 
-Passa l'enllaç de la MR a un company. A la pestanya *Changes*, pot fer clic
-en una línia i deixar-hi un comentari. Respon-li a la mateixa MR.
+Passa l'enllaç de la MR a algú altre: una persona que també faci els reptes,
+o algú de l'equip. A la pestanya *Changes*, pot fer clic en una línia i
+deixar-hi un comentari. Respon-li a la mateixa MR. Si fas els reptes sol,
+fes-ho tu: comentar el codi abans d'integrar-lo també és un hàbit.
 
 ## Comprova-ho
 
@@ -77,6 +79,7 @@ python verifica.py 07
 
 `verifica.py` comprova que les branques són a GitLab i que `treball/pas-05`
 té seguiment. La merge request i la revisió no es poden comprovar des del
-teu ordinador: les revisarà el docent a GitLab.
+teu ordinador: comprova-les tu a GitLab. La MR ha de ser dins del teu fork,
+de `treball/pas-05` cap a `main`, i ha de tenir almenys un comentari.
 
 Bon viatge, tripulant.

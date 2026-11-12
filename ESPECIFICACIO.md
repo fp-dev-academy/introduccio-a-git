@@ -343,14 +343,16 @@ de Python.
   1. Pujar a `origin` totes les branques `treball/pas-*`.
   2. Obrir una merge request **dins del propi fork** de `treball/pas-05` cap a `main`.
      Atenció: per defecte GitLab proposa el repositori guia com a destinació, i cal canviar-la.
-  3. Demanar a un company que la revisi i hi deixi un comentari.
+  3. Demanar a algú que la revisi i hi deixi un comentari (o fer-ho un mateix).
 - **Criteris de `verifica.py 07`:**
   - Per a cada branca local `treball/pas-*`, existeix la remota a `origin` i apunta al mateix commit (`git ls-remote`).
     El pas 06 pot faltar si s'ha fet opcional (secció 2): el criteri només exigeix les branques que existeixen en local.
   - `treball/pas-05` té branca upstream configurada.
 - **Xarxa:** és l'únic pas que fa servir la xarxa. Si `git ls-remote origin` falla, el criteri
   falla amb la pista `ssh -T git@gitlab.com`, i no amb una traça de Python.
-- **Limitació:** la merge request i la revisió no es poden comprovar en local. Les revisa el docent a GitLab.
+- **Limitació:** la merge request i la revisió no es poden comprovar en local. El `REPTE.md`
+  diu com comprovar-les a GitLab (en un taller o una classe, també les pot revisar qui
+  l'organitza).
 
 ## 5. Ampliació autònoma (fase 2, fora de la sessió)
 

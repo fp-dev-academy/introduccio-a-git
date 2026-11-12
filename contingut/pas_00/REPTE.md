@@ -1,6 +1,7 @@
 # Pas 00 · Embarcament
 
-> Feina prèvia: fes aquest pas **abans de la sessió**.
+> És un pas de preparació (compte, clau SSH i fork). Si feu els reptes en
+> grup, val la pena que cadascú el tingui fet abans de començar.
 
 Ningú no puja a la Rocinante sense registrar-se. Necessites la teva còpia
 del diari de bord, connectada amb la de la flota, i que Git sàpiga qui ets.

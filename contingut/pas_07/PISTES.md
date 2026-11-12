@@ -54,8 +54,8 @@ git push -u origin treball/pas-05
 A *Target branch*, canvia el projecte per `<usuari>/git-rocinante`. Si ja
 l'has creada, tanca-la (*Close merge request*) i obre'n una de nova.
 
-## El company no pot comentar la merge request
+## L'altra persona no pot comentar la merge request
 
-El teu fork ha de ser visible per a ell. Comprova-ho a *Settings → General
-→ Visibility*, o afegeix-lo com a membre del projecte amb el rol
-*Reporter*.
+El teu fork ha de ser visible per a aquesta persona. Comprova-ho a
+*Settings → General → Visibility*, o afegeix-la com a membre del projecte
+amb el rol *Reporter*.
