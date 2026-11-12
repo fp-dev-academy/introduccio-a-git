@@ -12,6 +12,7 @@ Codis de sortida: 0 si se superen tots els criteris, 1 si en falla algun,
 pas no existeix).
 """
 
+import ast
 import re
 import subprocess
 import sys
@@ -80,7 +81,62 @@ def es_ssh(url: str) -> bool:
     return url.startswith(("git@", "ssh://"))
 
 
+def es_avantpassat(avantpassat: str, descendent: str = "HEAD") -> bool:
+    return git("merge-base", "--is-ancestor", avantpassat, descendent).returncode == 0
+
+
+def commits_nous(des_de: str) -> list[str]:
+    """Hashos dels commits de des_de..HEAD, del més antic al més nou."""
+    return sortida("rev-list", "--reverse", f"{des_de}..HEAD").splitlines()
+
+
+def fitxers_a_head() -> list[str]:
+    return sortida("ls-tree", "-r", "--name-only", "HEAD").splitlines()
+
+
+def directori_net() -> bool:
+    return git("status", "--porcelain").stdout.strip() == ""
+
+
+PATRO_CONVENTIONAL = re.compile(
+    r"^(feat|fix|docs|refactor|test|chore)(\([a-z0-9-]+\))?!?: \S.*$")
+
+
+def missatges_no_convencionals(des_de: str) -> list[str]:
+    """Primeres línies de des_de..HEAD que no segueixen Conventional Commits.
+
+    No es comproven els missatges que genera git (merges i reverts).
+    """
+    assumptes = sortida("log", "--no-merges", "--format=%s", f"{des_de}..HEAD").splitlines()
+    return [a for a in assumptes
+            if not a.startswith(('Revert "', "Merge "))
+            and (PATRO_CONVENTIONAL.match(a) is None or len(a) > 72)]
+
+
+def llista_literal(referencia: str, fitxer: str, nom: str):
+    """Valor literal d'una assignació `nom = [...]` d'un fitxer a una referència.
+
+    Fa servir ast: no s'executa mai el codi de l'alumne. Retorna None si el
+    fitxer no existeix, té errors de sintaxi o no hi ha l'assignació.
+    """
+    font = sortida("show", f"{referencia}:{fitxer}")
+    try:
+        arbre = ast.parse(font)
+    except SyntaxError:
+        return None
+    for node in arbre.body:
+        if (isinstance(node, ast.Assign) and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name) and node.targets[0].id == nom):
+            try:
+                return ast.literal_eval(node.value)
+            except ValueError:
+                return None
+    return None
+
+
 # --- Passos --------------------------------------------------------------
+# Cada pas va entre les marques `# >>> pas NN` i `# <<< pas NN`: el generador
+# esborra els passos posteriors al tag on es publica verifica.py.
 
 PASSOS = {}
 
@@ -92,6 +148,7 @@ def pas(numero: str, titol: str):
     return registra
 
 
+# >>> pas 00
 @pas("00", "Embarcament")
 def verifica_pas_00(repo: Path) -> list[Resultat]:
     nom = config("user.name")
@@ -122,6 +179,44 @@ def verifica_pas_00(repo: Path) -> list[Resultat]:
                 f"Python 3.12 o superior (tens {sys.version.split()[0]})",
                 "Instal·la una versió de Python més recent."),
     ]
+# <<< pas 00
+
+
+# >>> pas 01
+@pas("01", "Primera entrada al diari")
+def verifica_pas_01(repo: Path) -> list[Resultat]:
+    if not es_avantpassat("pas-01"):
+        return [criteri(False, "la branca parteix de pas-01",
+                        "git switch -c treball/pas-01 pas-01")]
+    nous = commits_nous("pas-01")
+    inicial = llista_literal("pas-01", "rocinante/tripulacio.py", "TRIPULACIO") or []
+    actual = llista_literal("HEAD", "rocinante/tripulacio.py", "TRIPULACIO")
+    fitxers = fitxers_a_head()
+    gitignore = sortida("show", "HEAD:.gitignore") if ".gitignore" in fitxers else ""
+    brossa = [f for f in fitxers
+              if "__pycache__/" in f or f.startswith(".idea/") or f.endswith(".pyc")]
+    lliures = missatges_no_convencionals("pas-01")
+    return [
+        criteri(len(nous) >= 2, f"almenys 2 commits nous (n'hi ha {len(nous)})",
+                "Un commit per a la tripulació i un altre per al .gitignore."),
+        criteri(actual is not None and len(actual) > len(inicial),
+                "TRIPULACIO té almenys un tripulant més que a pas-01",
+                "Afegeix-te a la llista TRIPULACIO de rocinante/tripulacio.py i fes commit."
+                if actual is not None else
+                "rocinante/tripulacio.py té un error de sintaxi: revisa les comes i els claudàtors."),
+        criteri("__pycache__" in gitignore and ".idea" in gitignore,
+                ".gitignore versionat, amb __pycache__ i .idea",
+                "Crea .gitignore amb les línies __pycache__/, *.pyc i .idea/, i fes-ne commit."),
+        criteri(not brossa, "cap fitxer de __pycache__/ ni .idea/ versionat",
+                "Treu-los de l'índex sense esborrar-los: git rm -r --cached <carpeta>"
+                + (f" (versionats: {', '.join(brossa[:3])})" if brossa else "")),
+        criteri(directori_net(), "directori de treball net",
+                "Hi ha canvis sense commit. Mira-ho amb: git status"),
+        criteri(not lliures, "missatges dels commits nous en format Conventional Commits",
+                "Revisa: " + "; ".join(f"«{m}»" for m in lliures[:3])
+                + ". Format: «feat: afegeix ...». Vegeu REPTE.md."),
+    ]
+# <<< pas 01
 
 
 # --- Programa principal ----------------------------------------------------

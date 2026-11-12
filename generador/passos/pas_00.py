@@ -31,6 +31,6 @@ def build(repo: Repo) -> None:
     repo.commit("docs: explica com funciona el diari de bord", "holden")
 
     copia(repo, "pas_00", "REPTE.md", "PISTES.md")
-    repo.escriu("verifica.py", verifica())
+    repo.escriu("verifica.py", verifica("00"))
     repo.commit("feat: afegeix el repte i el verificador del pas 00", "naomi")
     repo.tag("pas-00", "Pas 00 - Embarcament", "holden")

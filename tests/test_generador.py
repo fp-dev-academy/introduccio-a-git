@@ -11,6 +11,12 @@ from pathlib import Path
 ARREL = Path(__file__).resolve().parents[1]
 BUILD = ARREL / "generador" / "build.py"
 
+# Títols dels passos implementats (ESPECIFICACIO.md, secció 2).
+TITOLS = {
+    "pas-00": "Embarcament",
+    "pas-01": "Primera entrada al diari",
+}
+
 
 def build(sortida: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
@@ -92,11 +98,33 @@ class TestBuild(unittest.TestCase):
         )
 
     def test_tags_anotats_amb_el_titol_del_pas(self) -> None:
-        self.assertEqual(git(self.repo, "cat-file", "-t", "pas-00"), "tag")
-        self.assertEqual(
-            git(self.repo, "tag", "-l", "pas-00", "--format=%(contents:subject)"),
-            "Pas 00 - Embarcament",
-        )
+        for tag, titol in TITOLS.items():
+            with self.subTest(tag=tag):
+                self.assertEqual(git(self.repo, "cat-file", "-t", tag), "tag")
+                self.assertEqual(
+                    git(self.repo, "tag", "-l", tag, "--format=%(contents:subject)"),
+                    f"Pas {tag[4:]} - {titol}",
+                )
+
+    def test_verifica_de_cada_tag_nomes_te_els_passos_fins_al_seu(self) -> None:
+        for tag in TITOLS:
+            with self.subTest(tag=tag):
+                arbre = ast.parse(git(self.repo, "show", f"{tag}:verifica.py"))
+                passos = {n.name[-2:] for n in arbre.body
+                          if isinstance(n, ast.FunctionDef) and n.name.startswith("verifica_pas_")}
+                esperats = {t[4:] for t in TITOLS if t <= tag}
+                self.assertEqual(passos, esperats)
+
+    def test_pas_01_sense_gitignore_i_amos_l_afegeix_just_despres(self) -> None:
+        fitxers = git(self.repo, "ls-tree", "-r", "--name-only", "pas-01").splitlines()
+        self.assertNotIn(".gitignore", fitxers)
+        commit = git(self.repo, "log", "--format=%H", "--diff-filter=A", "HEAD", "--", ".gitignore")
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", commit), "Amos Burton")
+        self.assertEqual(git(self.repo, "rev-parse", f"{commit}~1"),
+                         git(self.repo, "rev-parse", "pas-01^{commit}"))
+        gitignore = git(self.repo, "show", "HEAD:.gitignore")
+        for patro in ("__pycache__/", ".idea/"):
+            self.assertIn(patro, gitignore.splitlines())
 
     def test_els_tags_coincideixen_amb_els_que_espera_verifica(self) -> None:
         tags = set(git(self.repo, "tag", "-l").splitlines())

@@ -63,6 +63,15 @@ class TestVerificador(unittest.TestCase):
 
     def resol_i_verifica(self, script: Path, pas: str) -> subprocess.CompletedProcess[str]:
         clon, entorn = self.prepara_alumne(script.stem)
+        entorn["PYTHON"] = sys.executable
+        if pas != "00":
+            # A partir del pas 01, l'alumne ja ha fet el pas 00. L'editor `true`
+            # accepta el missatge per defecte sense obrir cap finestra.
+            for clau, valor in (("user.name", "Camina Drummer"),
+                                ("user.email", "camina.drummer@exemple.cat"),
+                                ("core.editor", "true")):
+                subprocess.run(["git", "config", "--global", clau, valor],
+                               env=entorn, check=True)
         solucio = subprocess.run(["bash", str(script)], cwd=clon, env=entorn,
                                  capture_output=True, encoding="utf-8")
         self.assertEqual(solucio.returncode, 0, f"{script.name}: {solucio.stderr}")

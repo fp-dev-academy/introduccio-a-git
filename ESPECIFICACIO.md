@@ -143,6 +143,13 @@ màxim. Els missatges que genera git (`Merge branch ...`, `Revert "..."`) no es 
 Quan un criteri parla de «commits nous», «commits de merge» o «la història de `HEAD`», es
 refereix al rang `pas-NN..HEAD`, excepte si s'indica una altra cosa.
 
+### Punt de partida
+
+Si `pas-NN` no és avantpassat de `HEAD` (l'alumne no és a la seva branca `treball/pas-NN`
+o n'ha reescrit l'inici), el verificador mostra només el criteri «la branca parteix de
+`pas-NN`», amb la pista `git switch -c treball/pas-NN pas-NN`. Els altres criteris no tindrien
+sentit. Aquesta comprovació no s'aplica al pas 00, que es fa des de `main`.
+
 ### Errors de l'entorn
 
 Si `git` no és al PATH, el directori no és un repositori o el pas no existeix en aquella
