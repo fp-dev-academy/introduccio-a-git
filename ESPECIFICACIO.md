@@ -521,4 +521,4 @@ Regles comunes de l'ampliació:
 - `notepad` com a editor funciona des de Git Bash per a `commit` sense `-m` i per al missatge del merge.
 - GitLab copia tots els tags i les branques `tripulacio/*` en fer el fork (el pas 00 ho comprova).
 - Els identificadors en català són una excepció didàctica a la convenció del grup
-  (identificadors en anglès): vegeu la decisió 0007 de `comu` (estat: proposada).
+  (identificadors en anglès): vegeu la decisió 0007 de `comu` (acceptada).
