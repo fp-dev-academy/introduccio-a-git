@@ -23,7 +23,16 @@ TITOLS = {
     "pas-02": "La caixa negra",
     "pas-03": "Esborrar les proves",
     "pas-04": "Nova secció de tripulació",
+    "pas-05": "Conflicte a la sala de màquines",
 }
+
+# Tests que fallen a propòsit en un tag: fer-los passar és l'objectiu del pas.
+FALLEN_A_PROPOSIT = {
+    ("pas-05", "test_combustible.py"),
+}
+
+NAOMI = "origin/tripulacio/naomi-eficiencia"
+AMOS = "origin/tripulacio/amos-potencia"
 
 
 def build(sortida: Path) -> subprocess.CompletedProcess[str]:
@@ -186,7 +195,10 @@ class TestBuild(unittest.TestCase):
                     self.assertEqual(resultat.returncode, 0, resultat.stderr)
                 for test in sorted(Path(directori, "tests").glob("test_*.py")):
                     resultat = executa(Path(directori), str(test))
-                    self.assertEqual(resultat.returncode, 0, f"{test.name}: {resultat.stderr}")
+                    if (tag, test.name) in FALLEN_A_PROPOSIT:
+                        self.assertEqual(resultat.returncode, 1, f"{tag}: {test.name} hauria de fallar")
+                    else:
+                        self.assertEqual(resultat.returncode, 0, f"{test.name}: {resultat.stderr}")
 
     def _commits_rumb_emergencia(self) -> list[str]:
         """Commits fins a pas-02 que afegeixen o esborren rumb_emergencia (antic → nou)."""
@@ -252,6 +264,61 @@ class TestBuild(unittest.TestCase):
     def test_pas_04_sense_per_rol_ni_branca_feature(self) -> None:
         self.assertNotIn("def per_rol", git(self.repo, "show", "pas-04:rocinante/tripulacio.py"))
         self.assertEqual(git(self.repo, "branch", "--list", "feature/*"), "")
+
+    def _clon(self, directori: Path) -> Path:
+        clon = directori / "clon"
+        git(directori, "clone", "--quiet", str(self.repo), str(clon))
+        for clau, valor in (("user.name", "Prova"), ("user.email", "prova@exemple.cat")):
+            git(clon, "config", clau, valor)
+        return clon
+
+    def test_pas_05_branques_de_la_tripulacio_amb_un_commit_cadascuna(self) -> None:
+        for branca, autor in (("tripulacio/naomi-eficiencia", "Naomi Nagata"),
+                              ("tripulacio/amos-potencia", "Amos Burton")):
+            with self.subTest(branca=branca):
+                self.assertEqual(git(self.repo, "rev-parse", f"{branca}~1"),
+                                 git(self.repo, "rev-parse", "pas-05^{commit}"))
+                self.assertEqual(git(self.repo, "log", "-1", "--format=%an", branca), autor)
+                self.assertEqual(git(self.repo, "diff", "--name-only", "pas-05", branca),
+                                 "rocinante/combustible.py")
+
+    def test_pas_05_el_test_de_combustible_falla_a_les_branques(self) -> None:
+        for branca in ("tripulacio/naomi-eficiencia", "tripulacio/amos-potencia"):
+            with self.subTest(branca=branca), tempfile.TemporaryDirectory() as directori:
+                exporta(self.repo, branca, Path(directori))
+                self.assertEqual(executa(Path(directori), "tests/test_combustible.py").returncode, 1)
+
+    def test_pas_05_naomi_fast_forward_i_amos_conflicte_nomes_a_calcula_consum(self) -> None:
+        with tempfile.TemporaryDirectory() as directori:
+            clon = self._clon(Path(directori))
+            git(clon, "switch", "--quiet", "-c", "treball/pas-05", "pas-05")
+            self.assertIn("Fast-forward", git(clon, "merge", NAOMI))
+            merge = subprocess.run(["git", "-C", str(clon), "merge", AMOS],
+                                   capture_output=True, encoding="utf-8")
+            self.assertNotEqual(merge.returncode, 0)
+            self.assertEqual(git(clon, "diff", "--name-only", "--diff-filter=U"),
+                             "rocinante/combustible.py")
+            linies = (clon / "rocinante/combustible.py").read_text(encoding="utf-8").splitlines()
+            inici = next(i for i, l in enumerate(linies) if "def calcula_consum" in l)
+            final = next((i for i, l in enumerate(linies) if i > inici and l.startswith("def ")
+                          and "calcula_consum" not in l), len(linies))
+            marques = [i for i, l in enumerate(linies) if l.startswith(("<<<<<<<", ">>>>>>>"))]
+            self.assertTrue(marques)
+            self.assertTrue(all(inici - 1 <= i < final for i in marques), linies)
+
+    def test_pas_05_v1_0_es_el_merge_de_naomi_a_main_i_tots_els_tests_passen(self) -> None:
+        self.assertEqual(git(self.repo, "rev-parse", "v1.0^2"),
+                         git(self.repo, "rev-parse", "tripulacio/amos-potencia"))
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", "v1.0"), "Naomi Nagata")
+        for branca in ("tripulacio/naomi-eficiencia", "tripulacio/amos-potencia"):
+            git(self.repo, "merge-base", "--is-ancestor", branca, "v1.0")
+        git(self.repo, "merge-base", "--is-ancestor", "v1.0", "main")
+        self.assertEqual(git(self.repo, "rev-parse", "v1.0~0^{commit}"),
+                         git(self.repo, "rev-list", "-1", "--merges", "pas-05..main"))
+        with tempfile.TemporaryDirectory() as directori:
+            exporta(self.repo, "v1.0", Path(directori))
+            for test in sorted(Path(directori, "tests").glob("test_*.py")):
+                self.assertEqual(executa(Path(directori), str(test)).returncode, 0, test.name)
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")

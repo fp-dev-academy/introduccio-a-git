@@ -121,6 +121,31 @@ class Repo:
         self._commits += 1
         return self.git("rev-parse", "HEAD")
 
+    def merge(self, branca: str, tripulant: str,
+              resolucio: dict[str, str] | None = None) -> str:
+        """Fa un merge amb commit de merge (--no-ff) i en retorna el hash.
+
+        Si hi ha conflictes, `resolucio` dona el contingut final de cada fitxer
+        en conflicte. Si en falta algun, és un error.
+        """
+        identitat = self._identitat(tripulant, DATA_BASE + self._commits * INTERVAL)
+        resultat = subprocess.run(
+            ["git", "merge", "--no-ff", "--no-edit", branca],
+            cwd=self.directori, env=self._entorn(identitat),
+            capture_output=True, encoding="utf-8",
+        )
+        if resultat.returncode != 0:
+            en_conflicte = set(self.git("diff", "--name-only", "--diff-filter=U").splitlines())
+            if not en_conflicte or not en_conflicte <= set(resolucio or {}):
+                self.git("merge", "--abort")
+                raise RuntimeError(f"merge de {branca} amb conflictes sense resoldre: "
+                                   f"{sorted(en_conflicte)}\n{resultat.stdout}{resultat.stderr}")
+            for ruta in sorted(en_conflicte):
+                self.escriu(ruta, resolucio[ruta])
+            self.git("commit", "--quiet", "--no-edit", extra=identitat)
+        self._commits += 1
+        return self.git("rev-parse", "HEAD")
+
     def tag(self, nom: str, missatge: str, tripulant: str) -> None:
         """Crea un tag anotat a HEAD amb la data de l'últim commit."""
         data = DATA_BASE + (self._commits - 1) * INTERVAL

@@ -129,6 +129,37 @@ class TestRepo(unittest.TestCase):
         )
         self.assertIn(f"This reverts commit {desfet}.", git(self.dir, "log", "-1", "--format=%b"))
 
+    def test_merge_amb_conflicte_resolt_crea_commit_de_merge_fixat(self) -> None:
+        with Repo.crea(self.dir) as repo:
+            repo.escriu("a.txt", "base\n")
+            repo.commit("chore: primer", "holden")
+            repo.git("switch", "--quiet", "-c", "altra")
+            repo.escriu("a.txt", "altra\n")
+            altra = repo.commit("feat: canvi a altra", "amos")
+            repo.git("switch", "--quiet", "main")
+            repo.escriu("a.txt", "main\n")
+            repo.commit("feat: canvi a main", "naomi")
+            merge = repo.merge("altra", "naomi", resolucio={"a.txt": "resolt\n"})
+        self.assertEqual(merge, git(self.dir, "rev-parse", "HEAD"))
+        self.assertEqual(git(self.dir, "rev-parse", "HEAD^2"), altra)
+        self.assertEqual((self.dir / "a.txt").read_text(encoding="utf-8"), "resolt\n")
+        self.assertEqual(git(self.dir, "log", "-1", "--format=%an|%cI|%s"),
+                         "Naomi Nagata|2026-01-05T09:51:00+01:00|Merge branch 'altra'")
+        self.assertEqual(git(self.dir, "status", "--porcelain"), "")
+
+    def test_merge_amb_conflicte_sense_resolucio_es_un_error(self) -> None:
+        with Repo.crea(self.dir) as repo:
+            repo.escriu("a.txt", "base\n")
+            repo.commit("chore: primer", "holden")
+            repo.git("switch", "--quiet", "-c", "altra")
+            repo.escriu("a.txt", "altra\n")
+            repo.commit("feat: canvi a altra", "amos")
+            repo.git("switch", "--quiet", "main")
+            repo.escriu("a.txt", "main\n")
+            repo.commit("feat: canvi a main", "naomi")
+            with self.assertRaises(RuntimeError):
+                repo.merge("altra", "naomi")
+
     def test_tripulant_desconegut_es_un_error(self) -> None:
         with Repo.crea(self.dir) as repo:
             repo.escriu("a.txt", "a\n")

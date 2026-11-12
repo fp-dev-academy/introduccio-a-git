@@ -296,7 +296,9 @@ de Python.
   - Les puntes de totes dues branques són avantpassades de `HEAD`.
   - Hi ha almenys un commit de merge amb 2 pares al rang `pas-05..HEAD`.
   - `HEAD` no és `v1.0` ni la té com a avantpassat (no s'ha copiat el merge de la tripulació).
-  - Cap fitxer versionat conté `<<<<<<<`, `=======` o `>>>>>>>`.
+  - Cap fitxer versionat que hagi canviat respecte de `pas-05` conté `<<<<<<<`, `=======` o
+    `>>>>>>>` a principi de línia. (Els fitxers que no han canviat no poden tenir marcadors de
+    l'alumne, i el `REPTE.md` en mostra uns d'exemple.)
   - `python tests/test_combustible.py` acaba amb codi 0.
 - **Solució de referència:**
   ```python
