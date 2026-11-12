@@ -51,7 +51,10 @@ tests/
 - **Les branques d'escenari i els commits de farciment no toquen mai `README.md`, `REPTE.md`,
   `PISTES.md`, `ORDRES.md` ni `verifica.py`.** Els conflictes només han d'aparèixer on l'especificació diu.
 - `build.py` és idempotent: esborra i recrea el directori de sortida.
-- El generador **no** fa push. La publicació la fa el docent manualment.
+- El generador **no** fa push. La publicació la fa el docent manualment, seguint
+  `PROVA-MANUAL.md` (secció «Si alguna cosa falla»). A `git-rocinante`, `main` està
+  protegida: per republicar amb `--force` cal activar temporalment *Allowed to force push*.
+  Si no, GitLab rebutja les branques però sí que actualitza els tags.
 
 ## Regles de `verifica.py`
 
