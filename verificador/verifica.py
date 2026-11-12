@@ -363,6 +363,50 @@ def verifica_pas_03(repo: Path) -> list[Resultat]:
 # <<< pas 03
 
 
+# >>> pas 04
+@pas("04", "Nova secció de tripulació")
+def verifica_pas_04(repo: Path) -> list[Resultat]:
+    if not es_avantpassat("pas-04"):
+        return [criteri(False, "la branca parteix de pas-04",
+                        "git switch -c treball/pas-04 pas-04")]
+    feature = sortida("rev-parse", "--verify", "--quiet", "refs/heads/feature/rols")
+    treball = sortida("rev-parse", "--verify", "--quiet", "refs/heads/treball/pas-04")
+    commits_feature = sortida("rev-list", "pas-04..feature/rols").splitlines() if feature else []
+    merges = sortida("rev-list", "--merges", "pas-04..treball/pas-04").splitlines() if treball else []
+    funcions = funcions_definides("treball/pas-04", "rocinante/tripulacio.py") if treball else None
+    if not feature or not treball:
+        pista_ff = "Calen totes dues branques: feature/rols i treball/pas-04."
+    elif merges:
+        pista_ff = ("Has creat un commit de merge (potser amb --no-ff). Torna a començar el "
+                    "pas: git switch -C treball/pas-04 pas-04, i fes git merge feature/rols "
+                    "sense --no-ff.")
+    elif not es_avantpassat("feature/rols", "treball/pas-04"):
+        pista_ff = "Encara no has integrat la branca: git switch treball/pas-04 i git merge feature/rols"
+    else:
+        pista_ff = ("treball/pas-04 té commits que no són a feature/rols. Els canvis s'havien "
+                    "de fer a feature/rols.")
+    a_feature = funcions_definides("feature/rols", "rocinante/tripulacio.py") if feature else None
+    if treball and funcions is None:
+        pista_per_rol = "rocinante/tripulacio.py té un error de sintaxi."
+    elif a_feature and "per_rol" in a_feature:
+        pista_per_rol = "per_rol és a feature/rols, però encara no l'has integrat a treball/pas-04."
+    else:
+        pista_per_rol = "Defineix def per_rol(rol): a rocinante/tripulacio.py, a feature/rols."
+    return [
+        criteri(bool(feature) and bool(commits_feature),
+                "la branca feature/rols existeix i té almenys un commit sobre pas-04",
+                "Crea-la des de treball/pas-04 (git switch -c feature/rols) i fes-hi el commit."
+                if not feature else "Fes el commit de per_rol a la branca feature/rols."),
+        criteri(bool(feature) and feature == treball,
+                "treball/pas-04 apunta al mateix commit que feature/rols (fast-forward)",
+                pista_ff),
+        criteri(funcions is not None and "per_rol" in funcions,
+                "per_rol existeix a rocinante/tripulacio.py (a treball/pas-04)",
+                pista_per_rol),
+    ]
+# <<< pas 04
+
+
 # --- Programa principal ----------------------------------------------------
 
 def arrel_del_repositori() -> Path:

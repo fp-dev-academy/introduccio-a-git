@@ -22,6 +22,7 @@ TITOLS = {
     "pas-01": "Primera entrada al diari",
     "pas-02": "La caixa negra",
     "pas-03": "Esborrar les proves",
+    "pas-04": "Nova secció de tripulació",
 }
 
 
@@ -247,6 +248,10 @@ class TestBuild(unittest.TestCase):
         self.assertIn(f"This reverts commit {self._commit_amos_was_here()}.",
                       git(self.repo, "log", "-1", "--format=%b", commit))
         self.assertNotIn("AMOS WAS HERE", git(self.repo, "show", "HEAD:rocinante/__main__.py"))
+
+    def test_pas_04_sense_per_rol_ni_branca_feature(self) -> None:
+        self.assertNotIn("def per_rol", git(self.repo, "show", "pas-04:rocinante/tripulacio.py"))
+        self.assertEqual(git(self.repo, "branch", "--list", "feature/*"), "")
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")
