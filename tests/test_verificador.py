@@ -2,8 +2,8 @@
 
 Per a cada pas NN:
 - solucions/pas_NN_ok.sh ha de superar `python verifica.py NN`;
-- cada solucions/pas_NN_ko_*.sh hi ha de fallar, i la sortida ha de tenir
-  una línia [FALLA] amb el text de la capçalera `# espera: <text>`.
+- cada solucions/pas_NN_ko_*.sh hi ha de fallar, i una línia [FALLA] (o la
+  seva pista) ha de contenir el text de la capçalera `# espera: <text>`.
 
 Cada solució s'executa amb bash dins d'un clon nou del repositori guia
 generat, com si fos el fork de l'alumne, i amb una configuració de git
@@ -37,6 +37,14 @@ def espera(script: Path) -> str:
     if coincidencia is None:
         raise AssertionError(f"{script.name} no té la capçalera '# espera: <text>'")
     return coincidencia.group(1).strip()
+
+
+def falles(sortida: str) -> list[str]:
+    """Cada línia [FALLA] juntament amb la seva línia de pista, si en té."""
+    linies = sortida.splitlines()
+    return [linia + "\n" + (linies[i + 1] if i + 1 < len(linies)
+                            and linies[i + 1].lstrip().startswith("Pista:") else "")
+            for i, linia in enumerate(linies) if linia.startswith("[FALLA]")]
 
 
 class TestVerificador(unittest.TestCase):
@@ -97,10 +105,9 @@ class TestVerificador(unittest.TestCase):
             with self.subTest(script=script.name):
                 resultat = self.resol_i_verifica(script, pas)
                 self.assertEqual(resultat.returncode, 1, resultat.stdout + resultat.stderr)
-                falles = [l for l in resultat.stdout.splitlines() if l.startswith("[FALLA]")]
                 text = espera(script)
-                self.assertTrue(any(text in l for l in falles),
-                                f"cap línia [FALLA] conté «{text}»:\n{resultat.stdout}")
+                self.assertTrue(any(text in f for f in falles(resultat.stdout)),
+                                f"cap [FALLA] ni la seva pista conté «{text}»:\n{resultat.stdout}")
 
     def test_cada_pas_amb_solucio_te_almenys_una_solucio_incorrecta(self) -> None:
         passos_ok = {s.name.split("_")[1] for s in SOLUCIONS.glob("pas_*_ok*.sh")}

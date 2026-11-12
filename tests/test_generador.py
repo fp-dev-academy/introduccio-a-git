@@ -11,11 +11,17 @@ from pathlib import Path
 ARREL = Path(__file__).resolve().parents[1]
 BUILD = ARREL / "generador" / "build.py"
 
+# Missatges que no segueixen Conventional Commits perquè són l'objecte d'un pas.
+MISSATGES_INCORRECTES_A_PROPOSIT = {
+    "asdf",  # pas 03: l'alumne el corregeix amb --amend
+}
+
 # Títols dels passos implementats (ESPECIFICACIO.md, secció 2).
 TITOLS = {
     "pas-00": "Embarcament",
     "pas-01": "Primera entrada al diari",
     "pas-02": "La caixa negra",
+    "pas-03": "Esborrar les proves",
 }
 
 
@@ -159,7 +165,11 @@ class TestBuild(unittest.TestCase):
 
     def test_tots_els_commits_son_conventional_commits(self) -> None:
         patro = re.compile(r"^(feat|fix|docs|refactor|test|chore)(\([a-z0-9-]+\))?!?: \S.*$")
-        for assumpte in git(self.repo, "log", "--format=%s").splitlines():
+        for assumpte in git(self.repo, "log", "--no-merges", "--format=%s").splitlines():
+            if assumpte.startswith('Revert "'):
+                continue  # missatge que genera git (ESPECIFICACIO.md, 3 bis)
+            if assumpte in MISSATGES_INCORRECTES_A_PROPOSIT:
+                continue
             self.assertRegex(assumpte, patro)
             self.assertLessEqual(len(assumpte), 72)
 
@@ -210,6 +220,33 @@ class TestBuild(unittest.TestCase):
         verifica = git(self.repo, "show", "pas-02:verifica.py").lower()
         self.assertNotIn(afegit[:7], verifica)
         self.assertNotIn("amos", verifica)
+
+    def _commit_amos_was_here(self) -> str:
+        commits = git(self.repo, "log", "--format=%H", "-S", "AMOS WAS HERE",
+                      "pas-03", "--", "rocinante/__main__.py").splitlines()
+        self.assertEqual(len(commits), 1)
+        return commits[0]
+
+    def test_pas_03_el_tag_apunta_al_commit_asdf_d_amos(self) -> None:
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an|%s", "pas-03"),
+                         "Amos Burton|asdf")
+        self.assertEqual(git(self.repo, "diff", "--name-only", "pas-03~1", "pas-03"),
+                         "rocinante/tripulacio.py")
+
+    def test_pas_03_amos_was_here_uns_commits_abans_i_ningu_mes_toca_main(self) -> None:
+        commit = self._commit_amos_was_here()
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an|%s", commit),
+                         "Amos Burton|feat: millora la sortida de la CLI")
+        self.assertGreaterEqual(int(git(self.repo, "rev-list", "--count", f"{commit}..pas-03")), 3)
+        self.assertEqual(git(self.repo, "log", "--format=%H", f"{commit}..pas-03",
+                             "--", "rocinante/__main__.py"), "")
+
+    def test_pas_03_naomi_fa_el_revert_just_despres_del_tag(self) -> None:
+        commit = git(self.repo, "rev-list", "--reverse", "pas-03..HEAD").splitlines()[0]
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", commit), "Naomi Nagata")
+        self.assertIn(f"This reverts commit {self._commit_amos_was_here()}.",
+                      git(self.repo, "log", "-1", "--format=%b", commit))
+        self.assertNotIn("AMOS WAS HERE", git(self.repo, "show", "HEAD:rocinante/__main__.py"))
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")

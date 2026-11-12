@@ -114,6 +114,13 @@ class Repo:
         self._commits += 1
         return self.git("rev-parse", "HEAD")
 
+    def revert(self, commit: str, tripulant: str) -> str:
+        """Fa `git revert` d'un commit amb el missatge per defecte i en retorna el hash."""
+        identitat = self._identitat(tripulant, DATA_BASE + self._commits * INTERVAL)
+        self.git("revert", "--no-edit", commit, extra=identitat)
+        self._commits += 1
+        return self.git("rev-parse", "HEAD")
+
     def tag(self, nom: str, missatge: str, tripulant: str) -> None:
         """Crea un tag anotat a HEAD amb la data de l'últim commit."""
         data = DATA_BASE + (self._commits - 1) * INTERVAL

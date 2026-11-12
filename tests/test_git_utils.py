@@ -114,6 +114,21 @@ class TestRepo(unittest.TestCase):
             hashos.append(git(Path(self._tmp.name) / nom, "rev-parse", "pas-00", "HEAD"))
         self.assertEqual(hashos[0], hashos[1])
 
+    def test_revert_amb_missatge_de_git_i_identitat_fixada(self) -> None:
+        with Repo.crea(self.dir) as repo:
+            repo.escriu("a.txt", "a\n")
+            repo.commit("chore: primer", "holden")
+            repo.escriu("a.txt", "b\n")
+            desfet = repo.commit("feat: canvia a", "amos")
+            hash_revert = repo.revert(desfet, "naomi")
+        self.assertEqual(hash_revert, git(self.dir, "rev-parse", "HEAD"))
+        self.assertEqual((self.dir / "a.txt").read_text(encoding="utf-8"), "a\n")
+        self.assertEqual(
+            git(self.dir, "log", "-1", "--format=%an|%cI|%s"),
+            'Naomi Nagata|2026-01-05T09:34:00+01:00|Revert "feat: canvia a"',
+        )
+        self.assertIn(f"This reverts commit {desfet}.", git(self.dir, "log", "-1", "--format=%b"))
+
     def test_tripulant_desconegut_es_un_error(self) -> None:
         with Repo.crea(self.dir) as repo:
             repo.escriu("a.txt", "a\n")

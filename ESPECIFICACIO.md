@@ -148,7 +148,8 @@ refereix al rang `pas-NN..HEAD`, excepte si s'indica una altra cosa.
 Si `pas-NN` no és avantpassat de `HEAD` (l'alumne no és a la seva branca `treball/pas-NN`
 o n'ha reescrit l'inici), el verificador mostra només el criteri «la branca parteix de
 `pas-NN`», amb la pista `git switch -c treball/pas-NN pas-NN`. Els altres criteris no tindrien
-sentit. Aquesta comprovació no s'aplica al pas 00, que es fa des de `main`.
+sentit. Aquesta comprovació no s'aplica al pas 00, que es fa des de `main`. Al pas 03 es
+comprova `pas-03~1`, perquè l'`--amend` substitueix precisament el commit `pas-03`.
 
 ### Errors de l'entorn
 

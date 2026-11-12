@@ -318,6 +318,51 @@ def verifica_pas_02(repo: Path) -> list[Resultat]:
 # <<< pas 02
 
 
+# >>> pas 03
+@pas("03", "Esborrar les proves")
+def verifica_pas_03(repo: Path) -> list[Resultat]:
+    # L'--amend substitueix pas-03: el punt de partida és el commit anterior.
+    if not es_avantpassat("pas-03~1"):
+        return [criteri(False, "la branca parteix de pas-03~1 (no s'ha reescrit la història compartida)",
+                        "Torna a començar: git switch -C treball/pas-03 pas-03")]
+    amos = sortida("log", "--format=%H", "-S", "AMOS WAS HERE",
+                   "pas-03", "--", "rocinante/__main__.py").splitlines()[-1]
+    cos_head = sortida("log", "-1", "--format=%B", "HEAD")
+    pare_anterior = sortida("rev-parse", "HEAD~2")
+    assumpte_anterior = sortida("log", "-1", "--format=%s", "HEAD~1")
+    asdf_encara_hi_es = es_avantpassat("pas-03")
+    if asdf_encara_hi_es and sortida("rev-parse", "HEAD") != sortida("rev-parse", "pas-03^{commit}"):
+        pista_amend = ("Has fet el revert abans de l'--amend? L'--amend només modifica l'últim "
+                       "commit. Torna a començar (git switch -C treball/pas-03 pas-03) i fes "
+                       "primer l'--amend i després el revert.")
+    else:
+        pista_amend = 'git commit --amend -m "feat: ..." (amb el commit asdf com a últim commit)'
+    return [
+        criteri(f"This reverts commit {amos}" in cos_head,
+                "HEAD és un revert del commit de l'AMOS WAS HERE",
+                f"git revert {amos[:7]}  (no l'esborris a mà: el revert deixa constància a la història)"),
+        criteri(not asdf_encara_hi_es and pare_anterior == sortida("rev-parse", "pas-03~1"),
+                "HEAD~1 substitueix el commit asdf (--amend)", pista_amend),
+        criteri(sortida("rev-parse", "HEAD~1^{tree}") == sortida("rev-parse", "pas-03^{tree}"),
+                "HEAD~1 té el mateix contingut que el commit asdf",
+                "L'--amend només havia de canviar el missatge, no els fitxers."),
+        criteri(assumpte_anterior != "asdf" and PATRO_CONVENTIONAL.match(assumpte_anterior) is not None
+                and len(assumpte_anterior) <= 72,
+                "el missatge de HEAD~1 està corregit, en format Conventional Commits",
+                f"Ara és «{assumpte_anterior}». Ha de ser com «feat: ascendeix l'Amos ...» "
+                "(vegeu la taula de tipus al REPTE.md del pas 01)."),
+        criteri(es_avantpassat(amos),
+                "el commit de l'AMOS WAS HERE continua a la història (no s'ha reescrit)",
+                "No esborris commits compartits: desfés-los amb git revert."),
+        criteri("AMOS WAS HERE" not in sortida("show", "HEAD:rocinante/__main__.py"),
+                "rocinante/__main__.py ja no conté AMOS WAS HERE",
+                f"git revert {amos[:7]}"),
+        criteri(directori_net(), "directori de treball i staging nets",
+                "Hi ha canvis sense commit. Mira-ho amb: git status"),
+    ]
+# <<< pas 03
+
+
 # --- Programa principal ----------------------------------------------------
 
 def arrel_del_repositori() -> Path:
