@@ -354,14 +354,152 @@ de Python.
 
 ## 5. Ampliació autònoma (fase 2, fora de la sessió)
 
-| Pas | Títol | Contingut |
-|---|---|---|
-| 08 | Història neta | `rebase` sobre `main`, regla d'or de no fer rebase del que ja és compartit |
-| 09 | Peces de recanvi | `stash` i `cherry-pick` d'un fix cap a una branca `release/1.x` |
-| 10 | Viatge sense retorn? | `reset --soft/--mixed/--hard` i recuperació amb `reflog` d'una branca esborrada |
-| 11 | Pilot automàtic | `.gitlab-ci.yml` que executa `tests/` a cada push |
+> **Estat: proposta pendent de revisió** (2026-11-12). No s'implementa fins que no s'accepti.
+> Està apuntada al full de ruta del grup (`comu/FULL-DE-RUTA.md`).
 
-Cal especificar-los amb el mateix nivell de detall abans d'implementar-los.
+| Pas | Títol | Temps orientatiu | Ajuda | Aprenentatge |
+|---|---|---|---|---|
+| 08 | Història neta | 20' | Comandes + objectiu | `rebase`, regla d'or del rebase |
+| 09 | Peces de recanvi | 20' | Comandes + objectiu | `stash`, `cherry-pick -x`, branques de manteniment |
+| 10 | Viatge sense retorn? | 25' | Comandes + objectiu | `reset --soft/--mixed/--hard`, `reflog` |
+| 11 | Pilot automàtic | 25' | Només l'objectiu | `.gitlab-ci.yml`, pipelines |
+
+Regles comunes de l'ampliació:
+
+- Segueixen el mateix flux (`git switch -c treball/pas-NN pas-NN`) i les mateixes regles de
+  `verifica.py` (secció 3 bis). Els tags `pas-08` … `pas-11` van a `main` després de `pas-07`, i
+  `main` acaba a `pas-11`.
+- El commit del repte del pas 08 també afegeix al `README.md` la taula de l'ampliació.
+- **S'implementen abans de la primera publicació** del repositori guia, perquè l'alumnat que
+  faci el fork ja ho tingui tot. Si s'haguessin d'afegir després, l'alumnat els obtindria amb
+  `git fetch upstream --tags` i les branques noves serien `upstream/...` (el verificador ja
+  busca les branques de la tripulació a `origin`, en local i a `upstream`, en aquest ordre).
+
+### Pas 08 — Història neta
+
+- **Narrativa:** Holden ha escrit el generador d'informes de missió en una branca mentre
+  `main` avançava. Vol integrar-lo sense un commit de merge, «perquè la caixa negra s'ha de
+  poder llegir d'una tirada».
+- **Aprenentatge:** `rebase` d'una branca sobre una altra, `rebase --continue` i
+  `rebase --abort` (a les pistes), història lineal, i la **regla d'or**: no es fa rebase d'una
+  branca que ja tenen altres persones.
+- **Estat inicial (`pas-08`):**
+  - `tripulacio/holden-informe` surt de `pas-08~2` i té 3 commits de Holden que creen i
+    amplien `rocinante/informe.py` (fitxer nou) i `tests/test_informe.py`.
+  - Entre `pas-08~2` i `pas-08` hi ha 2 commits a `main` (el segon és el del repte). Cap
+    d'aquests dos commits no toca els fitxers de la branca: el rebase no té conflictes.
+- **Repte:**
+  1. Des de `treball/pas-08`, crear `feature/informe` a partir de
+     `origin/tripulacio/holden-informe`.
+  2. `git rebase treball/pas-08` des de `feature/informe`.
+  3. Tornar a `treball/pas-08` i fer-hi el merge (fast-forward) de `feature/informe`.
+  4. **No** pujar `feature/informe` a `origin/tripulacio/holden-informe`: la branca de Holden
+     és compartida.
+- **Criteris:**
+  - `feature/informe` existeix i `pas-08` n'és avantpassat (s'ha fet el rebase).
+  - Al rang `pas-08..feature/informe` hi ha exactament 3 commits, sense merges, amb els mateixos
+    missatges, el mateix autor (Holden) i el mateix `git patch-id --stable` que els 3 de
+    Holden (és la mateixa feina, no una de nova).
+  - `treball/pas-08` apunta al mateix commit que `feature/informe`.
+  - `origin/tripulacio/holden-informe` encara té `pas-08~2` com a punt de sortida
+    (`merge-base` amb `pas-08`): no s'ha reescrit la branca compartida.
+  - `python tests/test_informe.py` passa a `treball/pas-08` (sobre una còpia, com al pas 05).
+- **Després del tag (coherència de `main`):** Holden fa el rebase de la seva feina i `main`
+  avança per fast-forward. `tripulacio/holden-informe` es manté intacta al repositori guia.
+
+### Pas 09 — Peces de recanvi
+
+- **Narrativa:** estàs a mig afegir una funcionalitat quan l'Alex avisa: la versió 1.x que
+  porten les naus de la flota es penja si algú demana un trajecte a velocitat 0. La correcció
+  ja és a `main`, però cal portar-la a `release/1.x` sense perdre la teva feina a mitges.
+- **Aprenentatge:** `stash` (`push`, `list`, `pop`), branques de manteniment, `cherry-pick -x`
+  i per què no es fa merge de `main` en una branca de manteniment.
+- **Estat inicial:**
+  - `release/1.x` surt de `v1.0` i té 1 commit de Naomi (`docs: ...`, que no toca
+    `navegacio.py`).
+  - Entre `pas-08` i `pas-09` hi ha el commit d'Alex
+    `fix: evita la divisió per zero al temps de trajecte`, que fa que `temps_trajecte()` llanci
+    `ValueError` si la velocitat no és positiva i hi afegeix un test a
+    `tests/test_navegacio.py`. S'ha de poder aplicar a `release/1.x` sense conflictes.
+- **Repte:**
+  1. Des de `treball/pas-09`, començar un canvi (el `REPTE.md` diu quin: afegir un tripulant a
+     `TRIPULACIO`) i **no** fer-ne commit.
+  2. `git stash push -m "..."`; crear `release/1.x` local a partir de `origin/release/1.x`;
+     `git cherry-pick -x <hash del fix>`.
+  3. Tornar a `treball/pas-09`, `git stash pop` i fer commit del canvi.
+- **Criteris:**
+  - `release/1.x` local existeix, segueix `origin/release/1.x` (upstream configurat) i té
+    exactament 1 commit sobre `origin/release/1.x`.
+  - Aquest commit té el mateix `patch-id` que el fix d'Alex i el missatge acaba amb
+    `(cherry picked from commit <hash del fix>)` (s'ha fet amb `-x`).
+  - `python tests/test_navegacio.py` passa a `release/1.x` (sobre una còpia).
+  - `origin/main` no és avantpassat de `release/1.x` (no s'ha fet merge de `main`).
+  - `treball/pas-09` té almenys 1 commit sobre `pas-09`, i `TRIPULACIO` hi té un element més.
+  - `git stash list` és buit (s'ha fet `pop` i no `apply`) i el directori de treball és net.
+- **Després del tag:** res. `release/1.x` es manté al repositori guia.
+
+### Pas 10 — Viatge sense retorn?
+
+- **Narrativa:** l'Amos ha fet tres commits `wip` i, per «netejar», ha esborrat una branca
+  que no estava integrada. La Naomi li explica que Git gairebé mai no oblida res.
+- **Aprenentatge:** `reset --soft`, `--mixed` i `--hard` (què passa amb l'índex i amb el
+  directori de treball), ajuntar commits locals amb `reset --soft`, `reflog` i recuperar una
+  branca esborrada.
+- **Limitació:** el reflog és **local**: no viatja amb el fork ni amb el clon. Per això els
+  «accidents» els provoca el mateix alumne seguint el `REPTE.md`, i `verifica.py` en comprova
+  el rastre al reflog (que pot llegir sense modificar res).
+- **Estat inicial (`pas-10`):** només el commit del repte.
+- **Repte:**
+  1. A `treball/pas-10`, fer 3 commits petits amb el missatge `wip` (el `REPTE.md` diu quins
+     canvis) i ajuntar-los en un de sol amb `git reset --soft HEAD~3` i un commit amb format
+     Conventional Commits.
+  2. Practicar (sense verificació) `reset --mixed` i `reset --hard` en una branca de proves,
+     amb `git status` abans i després.
+  3. Crear la branca `experiment`, fer-hi un commit amb el missatge
+     `feat: prova el motor de salt`, tornar a `treball/pas-10` i esborrar-la amb
+     `git branch -D experiment`.
+  4. Trobar el commit amb `git reflog` i tornar a crear la branca `experiment`.
+- **Criteris:**
+  - `treball/pas-10` té exactament 1 commit sobre `pas-10`, amb un missatge en format
+    Conventional Commits.
+  - El reflog de `treball/pas-10` conté una entrada `reset: moving to HEAD~3` (o a `pas-10`) i,
+    abans, almenys 3 entrades `commit: wip` (s'ha ajuntat amb `reset`).
+  - La branca `experiment` existeix, el seu últim commit té el missatge
+    `feat: prova el motor de salt` i no és avantpassat de `treball/pas-10`.
+  - La primera entrada del reflog de `experiment` és `branch: Created from <hash>` o
+    `branch: Created from HEAD@{n}`, i no `Created from HEAD`: s'ha recuperat, no s'ha tornat a
+    fer. (Comprovat amb git 2.54: `git branch -D` esborra el reflog de la branca, i
+    `git branch experiment <hash>` o `git switch -c experiment <hash>` en crea un de nou amb
+    aquest missatge.)
+  - Directori de treball net.
+- **Després del tag:** res.
+
+### Pas 11 — Pilot automàtic
+
+- **Narrativa:** la flota exigeix que cap canvi no arribi a les naus sense passar els tests.
+  Cal un pilot automàtic: integració contínua.
+- **Aprenentatge:** què és la CI, `.gitlab-ci.yml` (imatge, `script`), pipelines i jobs a
+  GitLab, i llegir el registre d'un job que falla.
+- **Estat inicial (`pas-11`):** només el commit del repte. Tots els tests passen a `pas-11`.
+- **Repte:**
+  1. A `treball/pas-11`, crear `.gitlab-ci.yml` amb un job que executi tots els fitxers de
+     `tests/` amb una imatge `python:3.15-slim`.
+  2. Fer-ne commit, pujar la branca i comprovar a GitLab que el pipeline és verd.
+  3. Fer un commit que trenqui un test, pujar-lo, veure el pipeline en vermell i llegir-ne el
+     registre. Desfer-lo amb `revert` i comprovar que torna a ser verd.
+- **Criteris de `verifica.py 11`:**
+  - `.gitlab-ci.yml` versionat a `treball/pas-11`, que conté `image:` amb `python` i un
+    `script:` que executa els tests (`python tests/` o `python -m unittest`). Sense biblioteques
+    externes, la comprovació és textual: no es valida el YAML.
+  - Al rang `pas-11..treball/pas-11` hi ha un commit de revert (el del test trencat).
+  - Tots els tests passen a `treball/pas-11` (sobre una còpia).
+  - `origin/treball/pas-11` existeix i està al dia (`git ls-remote`, com al pas 07).
+- **Limitació:** l'estat dels pipelines no es pot comprovar en local: el revisa el docent a
+  GitLab.
+- **Hipòtesi pendent de validar:** gitlab.com pot demanar a l'alumnat que verifiqui el compte
+  (telèfon o targeta) abans d'executar pipelines amb els runners compartits. Cal comprovar-ho
+  amb un compte d'alumne abans de proposar aquest pas, i si cal, resoldre-ho amb GitLab for
+  Education o amb un runner del centre.
 
 ## 6. Publicació i manteniment
 
