@@ -11,9 +11,9 @@ import shutil
 from pathlib import Path
 
 from git_utils import Repo
-from passos import pas_00, pas_01, pas_02, pas_03, pas_04, pas_05
+from passos import pas_00, pas_01, pas_02, pas_03, pas_04, pas_05, pas_06
 
-PASSOS = [pas_00, pas_01, pas_02, pas_03, pas_04, pas_05]
+PASSOS = [pas_00, pas_01, pas_02, pas_03, pas_04, pas_05, pas_06]
 
 
 def genera(sortida: Path) -> None:

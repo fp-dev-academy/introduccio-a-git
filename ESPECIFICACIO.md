@@ -316,11 +316,13 @@ de Python.
   - El tag `v1.0` apunta al commit de merge amb què Naomi integra les dues branques
     `tripulacio/*` a `main` (secció 3). És una versió bona: tots els tests hi passen.
   - Entre `v1.0` i `pas-06` hi ha 16 commits de farciment lineals (autors variats, canvis
-    plausibles), sense merges, perquè `bisect` sigui fàcil de seguir.
+    plausibles), sense merges, perquè `bisect` sigui fàcil de seguir, i després el commit del
+    repte (`REPTE.md`, `PISTES.md` i `verifica.py`), que és el que apunta `pas-06`. En total, el
+    rang `v1.0..pas-06` té 17 commits.
   - El commit 9 (`refactor: unifica conversions d'unitats`) canvia `/ 3600` per `/ 360` a `navegacio.py`.
   - Cap commit posterior no toca la línia afectada (el revert s'ha de poder fer sense conflictes).
   - `tests/test_navegacio.py` existeix i és idèntic a tot el rang `v1.0..pas-06`. Passa als
-    commits 1–8 i falla als commits 9–16.
+    commits 1–8 i falla als commits 9–17. **A `pas-06` falla a propòsit.**
   - `tests/test_combustible.py` passa a tot el rang (el merge de la tripulació ja hi és).
 - **Repte:**
   1. `git bisect start pas-06 v1.0` i `git bisect run python tests/test_navegacio.py`

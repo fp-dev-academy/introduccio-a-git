@@ -24,11 +24,13 @@ TITOLS = {
     "pas-03": "Esborrar les proves",
     "pas-04": "Nova secció de tripulació",
     "pas-05": "Conflicte a la sala de màquines",
+    "pas-06": "Algú ha trencat la navegació",
 }
 
 # Tests que fallen a propòsit en un tag: fer-los passar és l'objectiu del pas.
 FALLEN_A_PROPOSIT = {
     ("pas-05", "test_combustible.py"),
+    ("pas-06", "test_navegacio.py"),
 }
 
 NAOMI = "origin/tripulacio/naomi-eficiencia"
@@ -319,6 +321,59 @@ class TestBuild(unittest.TestCase):
             exporta(self.repo, "v1.0", Path(directori))
             for test in sorted(Path(directori, "tests").glob("test_*.py")):
                 self.assertEqual(executa(Path(directori), str(test)).returncode, 0, test.name)
+
+    def _rang_pas_06(self) -> list[str]:
+        return git(self.repo, "rev-list", "--reverse", "v1.0..pas-06").splitlines()
+
+    def test_pas_06_17_commits_lineals_entre_v1_0_i_el_tag(self) -> None:
+        self.assertEqual(len(self._rang_pas_06()), 17)
+        self.assertEqual(git(self.repo, "rev-list", "--merges", "v1.0..pas-06"), "")
+        self.assertEqual(git(self.repo, "rev-list", "--first-parent", "--count", "v1.0..pas-06"), "17")
+
+    def test_pas_06_el_commit_9_es_el_culpable(self) -> None:
+        culpable = self._rang_pas_06()[8]
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%s", culpable),
+                         "refactor: unifica conversions d'unitats")
+        self.assertNotEqual(git(self.repo, "log", "-1", "--format=%an", culpable), "Alex Kamal")
+        diff = git(self.repo, "diff", "-U0", f"{culpable}~1", culpable)
+        self.assertEqual([l for l in diff.splitlines() if l[:1] in "+-" and l[:3] not in ("+++", "---")],
+                         ["-    return distancia_km / velocitat_kms / 3600",
+                          "+    return distancia_km / velocitat_kms / 360"])
+        self.assertEqual(git(self.repo, "log", "--format=%H", f"{culpable}..pas-06",
+                             "--", "rocinante/navegacio.py"), "")
+
+    def test_pas_06_test_de_navegacio_identic_i_passa_fins_al_commit_8(self) -> None:
+        self.assertEqual(git(self.repo, "log", "--format=%H", "v1.0..pas-06",
+                             "--", "tests/test_navegacio.py"), "")
+        for numero, commit in enumerate(self._rang_pas_06(), start=1):
+            with self.subTest(commit=numero), tempfile.TemporaryDirectory() as directori:
+                exporta(self.repo, commit, Path(directori))
+                resultat = executa(Path(directori), "tests/test_navegacio.py").returncode
+                self.assertEqual(resultat, 0 if numero <= 8 else 1)
+                self.assertEqual(executa(Path(directori), "tests/test_combustible.py").returncode, 0)
+
+    def test_pas_06_el_farciment_no_toca_els_fitxers_del_curs(self) -> None:
+        farciment = self._rang_pas_06()[:16]
+        for commit in farciment:
+            canvis = git(self.repo, "diff", "--name-only", f"{commit}~1", commit).splitlines()
+            for fitxer in ("README.md", "REPTE.md", "PISTES.md", "verifica.py",
+                           "LICENSE", "LICENSE-docs"):
+                self.assertNotIn(fitxer, canvis)
+
+    def test_pas_06_bisect_run_troba_el_culpable(self) -> None:
+        culpable = self._rang_pas_06()[8]
+        with tempfile.TemporaryDirectory() as directori:
+            clon = self._clon(Path(directori))
+            git(clon, "bisect", "start", "pas-06", "v1.0")
+            sortida = git(clon, "bisect", "run", sys.executable, "tests/test_navegacio.py")
+            self.assertIn(f"{culpable} is the first bad commit", sortida)
+
+    def test_pas_06_alex_fa_el_revert_just_despres_del_tag(self) -> None:
+        culpable = self._rang_pas_06()[8]
+        commit = git(self.repo, "rev-list", "--reverse", "pas-06..HEAD").splitlines()[0]
+        self.assertEqual(git(self.repo, "log", "-1", "--format=%an", commit), "Alex Kamal")
+        self.assertIn(f"This reverts commit {culpable}.", git(self.repo, "log", "-1", "--format=%b", commit))
+        self.assertNotIn(culpable[:7], git(self.repo, "show", "pas-06:verifica.py"))
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")
