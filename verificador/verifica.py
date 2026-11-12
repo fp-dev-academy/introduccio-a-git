@@ -511,6 +511,49 @@ def verifica_pas_06(repo: Path) -> list[Resultat]:
 # <<< pas 06
 
 
+# >>> pas 07
+@pas("07", "Informe a la flota")
+def verifica_pas_07(repo: Path) -> list[Resultat]:
+    if not es_avantpassat("pas-07"):
+        return [criteri(False, "la branca parteix de pas-07",
+                        "git switch -c treball/pas-07 pas-07")]
+    locals_ = {}
+    for linia in sortida("for-each-ref", "--format=%(refname:short) %(objectname)",
+                         "refs/heads/treball/").splitlines():
+        nom, hash_ = linia.split()
+        locals_[nom] = hash_
+    # L'únic accés a la xarxa del curs: llegeix les branques del teu fork.
+    try:
+        remot = subprocess.run(["git", "ls-remote", "--heads", "origin"],
+                               capture_output=True, encoding="utf-8", timeout=60)
+    except subprocess.TimeoutExpired:
+        remot = None
+    if remot is None or remot.returncode != 0:
+        return [criteri(False, "es pot connectar amb origin",
+                        "Comprova la connexió i la clau SSH: ssh -T git@gitlab.com")]
+    a_origin = {}
+    for linia in remot.stdout.splitlines():
+        hash_, ref = linia.split()
+        a_origin[ref.removeprefix("refs/heads/")] = hash_
+    resultats = []
+    for nom in sorted(locals_):
+        if nom not in a_origin:
+            pista = f"git push -u origin {nom}"
+        elif a_origin[nom] != locals_[nom]:
+            pista = "Tens commits sense pujar (o la remota té canvis): git status i git push"
+        else:
+            pista = ""
+        resultats.append(criteri(not pista, f"origin/{nom} existeix i està al dia", pista))
+    remot_05 = config("branch.treball/pas-05.remote")
+    resultats.append(criteri(
+        "treball/pas-05" in locals_ and bool(remot_05) and bool(config("branch.treball/pas-05.merge")),
+        "treball/pas-05 té branca upstream configurada",
+        "No tens la branca treball/pas-05." if "treball/pas-05" not in locals_ else
+        "git push -u origin treball/pas-05  (la -u configura el seguiment)"))
+    return resultats
+# <<< pas 07
+
+
 # --- Programa principal ----------------------------------------------------
 
 def arrel_del_repositori() -> Path:

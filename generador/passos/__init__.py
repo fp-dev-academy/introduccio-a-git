@@ -12,7 +12,7 @@ VERIFICADOR = ARREL / "verificador" / "verifica.py"
 
 # Tots els tags del curs. En afegir un pas, cal afegir-hi el seu tag:
 # test_generador comprova que coincideixen amb els del repositori generat.
-TAGS_DEL_CURS = ("pas-00", "pas-01", "pas-02", "pas-03", "pas-04", "pas-05", "v1.0", "pas-06")
+TAGS_DEL_CURS = ("pas-00", "pas-01", "pas-02", "pas-03", "pas-04", "pas-05", "v1.0", "pas-06", "pas-07")
 
 # Respostes esperades de cada pas ("NN.clau" -> SHA-256 dels valors acceptats,
 # ja normalitzats). Les registren els passos durant la generació.

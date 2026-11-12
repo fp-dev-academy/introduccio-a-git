@@ -25,6 +25,7 @@ TITOLS = {
     "pas-04": "Nova secció de tripulació",
     "pas-05": "Conflicte a la sala de màquines",
     "pas-06": "Algú ha trencat la navegació",
+    "pas-07": "Informe a la flota",
 }
 
 # Tests que fallen a propòsit en un tag: fer-los passar és l'objectiu del pas.
@@ -374,6 +375,14 @@ class TestBuild(unittest.TestCase):
         self.assertEqual(git(self.repo, "log", "-1", "--format=%an", commit), "Alex Kamal")
         self.assertIn(f"This reverts commit {culpable}.", git(self.repo, "log", "-1", "--format=%b", commit))
         self.assertNotIn(culpable[:7], git(self.repo, "show", "pas-06:verifica.py"))
+
+    def test_el_curs_te_tots_els_tags_de_l_especificacio(self) -> None:
+        esperats = {f"pas-{n:02d}" for n in range(8)} | {"v1.0"}
+        self.assertEqual(set(git(self.repo, "tag", "-l").splitlines()), esperats)
+
+    def test_main_acaba_al_pas_07(self) -> None:
+        self.assertEqual(git(self.repo, "rev-parse", "main"),
+                         git(self.repo, "rev-parse", "pas-07^{commit}"))
 
     def test_cap_commit_posterior_no_toca_les_llicencies(self) -> None:
         primer = git(self.repo, "rev-list", "--max-parents=0", "HEAD")
