@@ -12,9 +12,6 @@ recuperar una funció que algú ha esborrat, desfer les proves de l'Amos,
 resoldre un conflicte entre la Naomi i l'Amos, trobar qui ha trencat la
 navegació...
 
-> **Estat:** en desenvolupament. El repositori de pràctica
-> (`git-rocinante`) encara no s'ha publicat.
-
 ## Com es juga
 
 1. Fes un **fork** del repositori de pràctica `git-rocinante` a GitLab i

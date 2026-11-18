@@ -13,7 +13,7 @@ siguin.
 
 | Repositori | Visibilitat | Contingut |
 |---|---|---|
-| `fp-dev-academy/introduccio-a-git` (aquest) | Privat fins que estigui acabat i comprovat; després, públic | Generador, verificador, solucions, tests, especificació |
+| `fp-dev-academy/introduccio-a-git` (aquest) | Públic | Generador, verificador, solucions, tests, especificació |
 | `fp-dev-academy/git-rocinante` | Públic a gitlab.com | **Generat** pel generador. L'alumnat en fa fork. **Mai s'edita a mà.** |
 
 ## Estructura d'aquest repositori
