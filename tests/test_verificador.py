@@ -147,6 +147,20 @@ class TestVerificador(unittest.TestCase):
                 self.assertEqual(resultat.returncode, 2, resultat.stdout + resultat.stderr)
                 self.assertNotIn("Traceback", resultat.stderr)
 
+    def test_pas_inexistent_durant_un_bisect_demana_bisect_reset(self) -> None:
+        clon, entorn = self.prepara_alumne("bisect-a-mig-fer")
+        for ordre in (["switch", "--quiet", "-c", "treball/pas-06", "pas-06"],
+                      ["bisect", "start", "pas-06", "v1.0"],
+                      ["bisect", "run", sys.executable, "tests/test_navegacio.py"]):
+            subprocess.run(["git", *ordre], cwd=clon, env=entorn, capture_output=True,
+                           check=True)
+        # HEAD és ara el commit culpable, amb un verifica.py anterior al pas 06.
+        resultat = subprocess.run([sys.executable, "verifica.py", "06"], cwd=clon,
+                                  env=entorn, capture_output=True, encoding="utf-8")
+        self.assertEqual(resultat.returncode, 2, resultat.stdout + resultat.stderr)
+        self.assertIn("git bisect reset", resultat.stdout)
+        self.assertNotIn("git switch -C", resultat.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

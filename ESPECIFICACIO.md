@@ -166,6 +166,11 @@ Si `git` no és al PATH, el directori no és un repositori o el pas no existeix 
 versió de `verifica.py`, l'script ho diu en una sola línia i acaba amb el codi 2, sense traça
 de Python.
 
+Si el pas no existeix i hi ha un `git bisect` en curs (existeix `.git/BISECT_LOG`), el
+missatge diu que el bisect ha portat `HEAD` a un commit antic, amb un `verifica.py` antic, i
+que cal fer primer `git bisect reset`. És el cas típic del pas 06: executar `verifica.py 06`
+abans d'acabar el bisect.
+
 ## 4. Passos de la sessió
 
 ### Pas 00 — Embarcament

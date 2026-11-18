@@ -67,3 +67,14 @@ git bisect start pas-06 v1.0
 ```bash
 git bisect reset
 ```
+
+## `verifica.py` diu que el pas 06 no existeix
+
+El bisect encara és en curs. `HEAD` és en un commit antic, i el
+`verifica.py` que hi ha al directori també ho és: encara no coneix el pas 06.
+Acaba el bisect, que et torna a la teva branca, i torna-ho a provar:
+
+```bash
+git bisect reset
+python verifica.py 06
+```

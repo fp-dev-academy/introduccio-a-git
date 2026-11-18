@@ -570,6 +570,13 @@ def main(arguments: list[str]) -> int:
     numero = arguments[0].zfill(2)
     if numero not in PASSOS:
         disponibles = ", ".join(sorted(PASSOS))
+        bisect_log = git("rev-parse", "--git-path", "BISECT_LOG")
+        if bisect_log.returncode == 0 and Path(bisect_log.stdout.strip()).exists():
+            raise ErrorEntorn(f"El pas {arguments[0]} no existeix en aquesta versió de "
+                              f"verifica.py: hi ha un git bisect en curs, i HEAD és en un "
+                              f"commit antic, amb un verifica.py antic.\n"
+                              f"Acaba primer el bisect i torna a la teva branca:\n"
+                              f"  git bisect reset")
         raise ErrorEntorn(f"El pas {arguments[0]} no existeix en aquesta versió de "
                           f"verifica.py. Passos disponibles: {disponibles}.\n"
                           f"Si has fet un reset a un commit anterior al pas, verifica.py "
