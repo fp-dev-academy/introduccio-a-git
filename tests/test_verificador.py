@@ -20,6 +20,7 @@ from pathlib import Path
 
 ARREL = Path(__file__).resolve().parents[1]
 SOLUCIONS = ARREL / "solucions"
+LIMIT_SEGONS = 120
 
 
 def entorn_alumne(directori: Path) -> dict[str, str]:
@@ -80,11 +81,15 @@ class TestVerificador(unittest.TestCase):
                                 ("core.editor", "true")):
                 subprocess.run(["git", "config", "--global", clau, valor],
                                env=entorn, check=True)
+        # Sense entrada i amb límit de temps: si una ordre espera res (un editor,
+        # una contrasenya), el test falla amb el nom de l'script en lloc de penjar-se.
         solucio = subprocess.run(["bash", str(script)], cwd=clon, env=entorn,
-                                 capture_output=True, encoding="utf-8")
+                                 stdin=subprocess.DEVNULL, capture_output=True,
+                                 encoding="utf-8", timeout=LIMIT_SEGONS)
         self.assertEqual(solucio.returncode, 0, f"{script.name}: {solucio.stderr}")
         return subprocess.run([sys.executable, "verifica.py", pas], cwd=clon, env=entorn,
-                              capture_output=True, encoding="utf-8")
+                              stdin=subprocess.DEVNULL, capture_output=True,
+                              encoding="utf-8", timeout=LIMIT_SEGONS)
 
     def test_solucions_correctes_superen_la_verificacio(self) -> None:
         scripts = sorted(SOLUCIONS.glob("pas_*_ok*.sh"))
