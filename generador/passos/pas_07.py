@@ -1,7 +1,7 @@
 """Pas 07 - Informe a la flota.
 
 Només afegeix el repte i el verificador. Les branques de treball les puja
-l'alumne; la merge request i la revisió les comprova el docent a GitLab.
+l'alumne; la pull request i la revisió les comprova el docent a GitHub.
 """
 
 from git_utils import Repo

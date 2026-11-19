@@ -18,19 +18,19 @@ Necessites:
 - **Python 3.12 o superior**. Comprova-ho amb `python --version`.
   Si Git Bash respon `command not found`, prova `py --version`: si funciona,
   escriu `py` cada vegada que aquí posi `python`.
-- Un compte a **gitlab.com** amb una **clau SSH** configurada. Comprova-ho:
+- Un compte a **github.com** amb una **clau SSH** configurada. Comprova-ho:
 
   ```bash
-  ssh -T git@gitlab.com
+  ssh -T git@github.com
   ```
 
-  Ha de respondre `Welcome to GitLab, @el-teu-usuari!`.
+  Ha de respondre `Hi el-teu-usuari! You've successfully authenticated`.
 
 ## Primer pas: l'embarcament
 
 El primer repte (pas 00) es fa **abans de clonar**, de manera que no el
-pots llegir al terminal. Llegeix-lo aquí, a GitLab:
-[`REPTE.md` del pas 00](https://gitlab.com/fp-dev-academy/git-rocinante/-/blob/pas-00/REPTE.md).
+pots llegir al terminal. Llegeix-lo aquí, a GitHub:
+[`REPTE.md` del pas 00](https://github.com/fp-dev-academy/git-rocinante/blob/pas-00/REPTE.md).
 
 ## Com funciona cada pas
 
@@ -66,7 +66,7 @@ git switch -C treball/pas-NN pas-NN
 | 04 | Nova secció de tripulació | branques, merge fast-forward |
 | 05 | Conflicte a la sala de màquines | merge de tres vies i conflictes |
 | 06 | Algú ha trencat la navegació | `bisect` |
-| 07 | Informe a la flota | `push`, branques de seguiment, merge requests |
+| 07 | Informe a la flota | `push`, branques de seguiment, pull requests |
 
 ## L'aplicació
 
@@ -86,4 +86,4 @@ python tests/test_navegacio.py             # executa un fitxer de tests
 - Codi: [MIT](LICENSE).
 - Textos: [CC BY-SA 4.0](LICENSE-docs).
 
-Material del grup [fp-dev-academy](https://gitlab.com/fp-dev-academy).
+Material del grup [fp-dev-academy](https://github.com/fp-dev-academy).

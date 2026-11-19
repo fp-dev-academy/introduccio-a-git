@@ -7,7 +7,7 @@
 | Alumnat | 2n CFGS DAM. Coneixen Git conceptualment, no l'utilitzen habitualment |
 | Durada | **2 hores** (sessió única) |
 | Plataforma | Windows 11, Git for Windows, Git Bash al terminal integrat de PyCharm, Python 3.15 |
-| Remot | Compte propi a gitlab.com amb claus SSH ja configurades |
+| Remot | Compte propi a github.com amb claus SSH ja configurades |
 | Model | Fork del repositori guia `git-rocinante` → clon per SSH → un tag per pas |
 
 ### Repositoris
@@ -47,7 +47,7 @@ l'alumne hagi fet en el pas anterior: l'estat inicial de cada pas el construeix 
 | | **Total** | **110'** + 10' de marge | | |
 
 **Risc:** el temps és ajustat. El pas 00 s'ha d'encarregar com a **feina prèvia** (fork, clon
-i `ssh -T git@gitlab.com`). Si el grup va endarrerit, el pas 06 passa a ser opcional i el pas 07 es fa igualment.
+i `ssh -T git@github.com`). Si el grup va endarrerit, el pas 06 passa a ser opcional i el pas 07 es fa igualment.
 
 Els passos 08 a 11 (secció 5) són d'**ampliació autònoma**, fora de la sessió.
 
@@ -178,8 +178,10 @@ abans d'acabar el bisect.
 - **Narrativa:** l'alumne s'enrola a la Rocinante i ha de registrar-se a bord.
 - **Aprenentatge:** fork, `clone` per SSH, `remote`, configuració.
 - **Repte:**
-  1. Fer el fork de `git-rocinante` a GitLab (web).
-  2. `git clone git@gitlab.com:<usuari>/git-rocinante.git`
+  1. Fer el fork de `git-rocinante` a GitHub (web), **desmarcant *Copy the `main` branch
+     only***: amb la casella marcada, el fork no té cap tag ni les branques `tripulacio/*`
+     (comprovat el 2026-11-19).
+  2. `git clone git@github.com:<usuari>/git-rocinante.git`
   3. `git remote add upstream <url SSH del repositori guia>`
   4. `git config --global user.name`, `user.email` i `core.editor notepad`
   5. `python verifica.py 00` (des de `main`)
@@ -188,7 +190,8 @@ abans d'acabar el bisect.
   - `core.editor` definit.
   - `origin` existeix, té URL SSH (`git@`) i no apunta al repositori guia.
   - `upstream` existeix i apunta al repositori guia.
-  - Hi ha els tags `pas-00` … `pas-07` i `v1.0` en local.
+  - Hi ha els tags `pas-00` … `pas-07` i `v1.0` en local. Si en falten (fork només amb
+    `main`), la pista és `git fetch upstream --tags`.
   - `python` respon i té la versió 3.12 o superior (el `REPTE.md` explica l'alternativa `py`
     si `python` no es troba a Git Bash).
 
@@ -352,20 +355,21 @@ abans d'acabar el bisect.
 ### Pas 07 — Informe a la flota
 
 - **Narrativa:** cal enviar l'informe de la missió a la flota perquè el revisi un company.
-- **Aprenentatge:** `push`, `push -u`, branques de seguiment, merge requests a GitLab.
+- **Aprenentatge:** `push`, `push -u`, branques de seguiment, pull requests a GitHub.
 - **Repte:**
   1. Pujar a `origin` totes les branques `treball/pas-*`.
-  2. Obrir una merge request **dins del propi fork** de `treball/pas-05` cap a `main`.
-     Atenció: per defecte GitLab proposa el repositori guia com a destinació, i cal canviar-la.
+  2. Obrir una pull request **dins del propi fork** de `treball/pas-05` cap a `main`.
+     Atenció: per defecte GitHub proposa el repositori guia com a *base repository*, i cal
+     canviar-lo.
   3. Demanar a algú que la revisi i hi deixi un comentari (o fer-ho un mateix).
 - **Criteris de `verifica.py 07`:**
   - Per a cada branca local `treball/pas-*`, existeix la remota a `origin` i apunta al mateix commit (`git ls-remote`).
     El pas 06 pot faltar si s'ha fet opcional (secció 2): el criteri només exigeix les branques que existeixen en local.
   - `treball/pas-05` té branca upstream configurada.
 - **Xarxa:** és l'únic pas que fa servir la xarxa. Si `git ls-remote origin` falla, el criteri
-  falla amb la pista `ssh -T git@gitlab.com`, i no amb una traça de Python.
-- **Limitació:** la merge request i la revisió no es poden comprovar en local. El `REPTE.md`
-  diu com comprovar-les a GitLab (en un taller o una classe, també les pot revisar qui
+  falla amb la pista `ssh -T git@github.com`, i no amb una traça de Python.
+- **Limitació:** la pull request i la revisió no es poden comprovar en local. El `REPTE.md`
+  diu com comprovar-les a GitHub (en un taller o una classe, també les pot revisar qui
   l'organitza).
 
 ## 5. Ampliació autònoma (fase 2, fora de la sessió)
@@ -378,7 +382,7 @@ abans d'acabar el bisect.
 | 08 | Història neta | 20' | Comandes + objectiu | `rebase`, regla d'or del rebase |
 | 09 | Peces de recanvi | 20' | Comandes + objectiu | `stash`, `cherry-pick -x`, branques de manteniment |
 | 10 | Viatge sense retorn? | 25' | Comandes + objectiu | `reset --soft/--mixed/--hard`, `reflog` |
-| 11 | Pilot automàtic | 25' | Només l'objectiu | `.gitlab-ci.yml`, pipelines |
+| 11 | Pilot automàtic | 25' | Només l'objectiu | GitHub Actions, workflows |
 
 Regles comunes de l'ampliació:
 
@@ -494,36 +498,36 @@ Regles comunes de l'ampliació:
 
 - **Narrativa:** la flota exigeix que cap canvi no arribi a les naus sense passar els tests.
   Cal un pilot automàtic: integració contínua.
-- **Aprenentatge:** què és la CI, `.gitlab-ci.yml` (imatge, `script`), pipelines i jobs a
-  GitLab, i llegir el registre d'un job que falla.
+- **Aprenentatge:** què és la CI, un workflow de GitHub Actions (`on`, `runs-on`, `steps`),
+  execucions i jobs, i llegir el registre d'un job que falla.
 - **Estat inicial (`pas-11`):** només el commit del repte. Tots els tests passen a `pas-11`.
 - **Repte:**
-  1. A `treball/pas-11`, crear `.gitlab-ci.yml` amb un job que executi tots els fitxers de
-     `tests/` amb una imatge `python:3.15-slim`.
-  2. Fer-ne commit, pujar la branca i comprovar a GitLab que el pipeline és verd.
-  3. Fer un commit que trenqui un test, pujar-lo, veure el pipeline en vermell i llegir-ne el
+  1. A `treball/pas-11`, crear `.github/workflows/tests.yml` amb un job que executi tots els
+     fitxers de `tests/` amb Python 3.15 (`actions/setup-python`).
+  2. Fer-ne commit, pujar la branca i comprovar a la pestanya *Actions* que l'execució és verda.
+  3. Fer un commit que trenqui un test, pujar-lo, veure l'execució en vermell i llegir-ne el
      registre. Desfer-lo amb `revert` i comprovar que torna a ser verd.
 - **Criteris de `verifica.py 11`:**
-  - `.gitlab-ci.yml` versionat a `treball/pas-11`, que conté `image:` amb `python` i un
-    `script:` que executa els tests (`python tests/` o `python -m unittest`). Sense biblioteques
+  - Un fitxer `.github/workflows/*.yml` versionat a `treball/pas-11`, que conté `runs-on:`,
+    `python` i un `run:` que executa els tests (`python tests/` o `python -m unittest`). Sense biblioteques
     externes, la comprovació és textual: no es valida el YAML.
   - Al rang `pas-11..treball/pas-11` hi ha un commit de revert (el del test trencat).
   - Tots els tests passen a `treball/pas-11` (sobre una còpia).
   - `origin/treball/pas-11` existeix i està al dia (`git ls-remote`, com al pas 07).
-- **Limitació:** l'estat dels pipelines no es pot comprovar en local: el revisa el docent a
-  GitLab.
-- **Hipòtesi pendent de validar:** gitlab.com pot demanar a l'alumnat que verifiqui el compte
-  (telèfon o targeta) abans d'executar pipelines amb els runners compartits. Cal comprovar-ho
-  amb un compte d'alumne abans de proposar aquest pas, i si cal, resoldre-ho amb GitLab for
-  Education o amb un runner del centre.
+- **Limitació:** l'estat de les execucions no es pot comprovar en local: el revisa el docent
+  a GitHub.
+- **Hipòtesi pendent de validar:** en un fork, GitHub pot demanar que s'activin els workflows
+  a la pestanya *Actions* abans d'executar-los. Cal comprovar-ho amb un compte de prova i, si
+  és així, que el `REPTE.md` ho expliqui. Als repositoris públics, Actions no té límit de
+  minuts.
 
 ## 6. Publicació i manteniment
 
 1. El docent executa `python generador/build.py --out <dir>`, revisa el resultat i fa push a `git-rocinante` (públic) amb `--force --all` i `--force --tags`.
    El push forçat només és admissible **abans** que l'alumnat faci el fork.
-2. El repositori guia no té `.gitlab-ci.yml` fins al pas 11, que l'afegeix l'alumne. La CI del
-   repositori font (`introduccio-a-git`) executa `tests/` en una imatge amb `git` (la imatge
-   `python:<versió>-slim` del component `python-tests` del grup no en porta).
+2. El repositori guia no té cap workflow fins al pas 11, que l'afegeix l'alumne. La CI del
+   repositori font (`introduccio-a-git`) és `.github/workflows/tests.yml`, i executa `tests/`
+   amb `unittest` a Python 3.12 i 3.15.
 3. **Un cop l'alumnat ha fet el fork, el repositori queda congelat.** Si cal una correcció,
    s'afegeix un tag nou (`pas-NN-b`) i no es mou cap tag existent.
 
@@ -533,6 +537,8 @@ Regles comunes de l'ampliació:
 - El portàtil té `python` al PATH dins de Git Bash (a Windows de vegades només hi ha `py`).
   El pas 00 ho ha de comprovar, i el `README.md` ha d'indicar l'alternativa.
 - `notepad` com a editor funciona des de Git Bash per a `commit` sense `-m` i per al missatge del merge.
-- GitLab copia tots els tags i les branques `tripulacio/*` en fer el fork (el pas 00 ho comprova).
+- ~~GitLab copia tots els tags i les branques `tripulacio/*` en fer el fork.~~ A GitHub,
+  comprovat el 2026-11-19: el fork complet ho copia tot; amb *Copy the `main` branch only*, cap
+  tag ni cap altra branca. Falta comprovar si la casella surt marcada per defecte a la web.
 - Els identificadors en català són una excepció didàctica a la convenció del grup
   (identificadors en anglès): vegeu la decisió 0007 de `comu` (acceptada).

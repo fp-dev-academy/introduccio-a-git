@@ -21,7 +21,7 @@ git switch -C treball/pas-NN pas-NN   # torna a començar el pas des de zero
 | `git config --global user.email "correu@exemple.cat"` | Defineix el correu dels commits | 00 |
 | `git config --global core.editor notepad` | Tria l'editor per als missatges (a macOS o Linux, `nano`) | 00 |
 | `git config --global --list` | Mostra la configuració | 00 |
-| `git clone git@gitlab.com:<usuari>/git-rocinante.git` | Copia un repositori remot al teu ordinador | 00 |
+| `git clone git@github.com:<usuari>/git-rocinante.git` | Copia un repositori remot al teu ordinador | 00 |
 | `git remote -v` | Llista els remots i les seves adreces | 00 |
 | `git remote add upstream <url>` | Afegeix un remot nou | 00 |
 | `git remote set-url origin <url>` | Canvia l'adreça d'un remot | 00 |

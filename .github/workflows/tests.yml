@@ -1,0 +1,39 @@
+# Integració contínua (CI) del projecte.
+#
+# Aquest projecte no fa servir els workflows de fp-dev-academy/comu: cap no
+# hi encaixa.
+#  - python-tests executa pytest amb un requirements.txt, i aquest projecte
+#    no té cap dependència: els tests són de unittest.
+#  - El generador i les solucions de referència necessiten git i bash, que
+#    els runners ubuntu-latest ja porten.
+# Si un altre projecte del grup necessita el mateix, es pot convertir en un
+# workflow de comu (vegeu comu/FULL-DE-RUTA.md).
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.12: versió mínima (CLAUDE.md). 3.15: la de l'alumnat (Windows 11).
+        python-version: ["3.12", "3.15"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python --version && git --version
+      # Definició de feina acabada (CLAUDE.md): determinisme del generador,
+      # solucions correctes i incorrectes de cada pas, conflicte del pas 05,
+      # bisect del pas 06 i aplicació funcionant a cada tag.
+      - run: python -m unittest discover -s tests -v

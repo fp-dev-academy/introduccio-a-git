@@ -1,6 +1,6 @@
 # La Rocinante · Aprèn Git al terminal
 
-[![pipeline](https://gitlab.com/fp-dev-academy/introduccio-a-git/badges/main/pipeline.svg)](https://gitlab.com/fp-dev-academy/introduccio-a-git/-/pipelines)
+[![tests](https://github.com/fp-dev-academy/introduccio-a-git/actions/workflows/tests.yml/badge.svg)](https://github.com/fp-dev-academy/introduccio-a-git/actions/workflows/tests.yml)
 
 **Vuit reptes de Git per resoldre al terminal, amb un verificador que et diu
 a l'instant si ho tens bé.** Res de diapositives: un repositori real, amb una
@@ -14,8 +14,9 @@ navegació...
 
 ## Com es juga
 
-1. Fes un **fork** del repositori de pràctica `git-rocinante` a GitLab i
-   clona'l per SSH.
+1. Fes un **fork** del repositori de pràctica
+   [`git-rocinante`](https://github.com/fp-dev-academy/git-rocinante) a
+   GitHub (amb totes les branques) i clona'l per SSH.
 2. Cada repte comença en un tag. Crea-hi la teva branca i llegeix
    l'enunciat:
 
@@ -65,7 +66,7 @@ Cada pas parteix del seu propi tag, de manera que pots saltar-te'n un.
 | 04 | Nova secció de tripulació | branques, `switch -c`, merge fast-forward |
 | 05 | Conflicte a la sala de màquines | branques remotes, merge de tres vies, resoldre un conflicte |
 | 06 | Algú ha trencat la navegació | `bisect`, `bisect run` |
-| 07 | Informe a la flota | `push -u`, branques de seguiment, merge requests i revisió |
+| 07 | Informe a la flota | `push -u`, branques de seguiment, pull requests i revisió |
 
 Tot plegat són unes **2 hores**. Els primers passos donen les ordres
 completes, i els últims només l'objectiu.
@@ -76,7 +77,7 @@ Ampliació en preparació: `rebase`, `stash` i `cherry-pick`, `reset` i
 ## Què necessites
 
 - **Git** i **Python 3.12 o superior**. No cal instal·lar res més.
-- Un compte a **gitlab.com** amb una **clau SSH** (per al fork i per al
+- Un compte a **github.com** amb una **clau SSH** (per al fork i per al
   pas 07).
 
 Els enunciats estan escrits per a **Git Bash** (Windows). A macOS i Linux
@@ -118,7 +119,7 @@ Un canvi està acabat quan:
 - la solució correcta de cada pas afectat supera `verifica.py` i cada
   solució incorrecta hi falla amb el missatge esperat;
 - la CI és verda;
-- la [prova manual](PROVA-MANUAL.md) no hi troba res a corregir (GitLab,
+- la [prova manual](PROVA-MANUAL.md) no hi troba res a corregir (GitHub,
   Windows i PyCharm, que els tests no poden comprovar).
 
 Les regles detallades són a [`CLAUDE.md`](CLAUDE.md).
@@ -128,4 +129,4 @@ Les regles detallades són a [`CLAUDE.md`](CLAUDE.md).
 - Codi: [MIT](LICENSE).
 - Textos: [CC BY-SA 4.0](LICENSE-docs).
 
-Un projecte de [fp-dev-academy](https://gitlab.com/fp-dev-academy).
+Un projecte de [fp-dev-academy](https://github.com/fp-dev-academy).

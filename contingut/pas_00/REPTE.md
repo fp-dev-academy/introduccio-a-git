@@ -15,24 +15,27 @@ del diari de bord, connectada amb la de la flota, i que Git sàpiga qui ets.
 
 ## El repte
 
-### 1. Fes el fork (a GitLab, al navegador)
+### 1. Fes el fork (a GitHub, al navegador)
 
-Un fork és una còpia del repositori al **teu** compte de GitLab. Hi podràs
+Un fork és una còpia del repositori al **teu** compte de GitHub. Hi podràs
 pujar canvis sense tocar el repositori de la flota.
 
-1. Obre <https://gitlab.com/fp-dev-academy/git-rocinante>.
+1. Obre <https://github.com/fp-dev-academy/git-rocinante>.
 2. Fes clic a **Fork**.
-3. A *Project URL*, tria el teu usuari com a espai de noms. Deixa la resta
-   com està i fes clic a **Fork project**.
+3. A *Owner*, tria el teu usuari.
+4. **Desmarca *Copy the `main` branch only*.** Si la deixes marcada, el
+   fork no tindrà cap tag ni les branques de la tripulació, i els necessites
+   tots.
+5. Fes clic a **Create fork**.
 
 ### 2. Clona el teu fork per SSH
 
 Obre el terminal de PyCharm (Git Bash), situa't a la carpeta on vulguis
 guardar els projectes i clona el **teu fork** (no el de la flota). Canvia
-`<usuari>` pel teu usuari de GitLab:
+`<usuari>` pel teu usuari de GitHub:
 
 ```bash
-git clone git@gitlab.com:<usuari>/git-rocinante.git
+git clone git@github.com:<usuari>/git-rocinante.git
 cd git-rocinante
 ```
 
@@ -48,7 +51,7 @@ Afegeix un segon remot, `upstream`, que apunti al repositori de la flota.
 D'aquí és d'on arribaran les correccions, si mai n'hi ha:
 
 ```bash
-git remote add upstream git@gitlab.com:fp-dev-academy/git-rocinante.git
+git remote add upstream git@github.com:fp-dev-academy/git-rocinante.git
 git remote -v
 ```
 
@@ -63,9 +66,11 @@ git config --global user.email "el-teu-correu@exemple.cat"
 git config --global core.editor notepad
 ```
 
-- El nom i el correu apareixeran a cada commit que facis. Fes servir el
-  correu del teu compte de GitLab, perquè GitLab associï els commits al
-  teu usuari.
+- El nom i el correu apareixeran a cada commit que facis, i el repositori
+  és públic. Fes servir un correu del teu compte de GitHub, perquè GitHub
+  associï els commits al teu usuari. Si no vols que el teu correu sigui
+  visible, fes servir l'adreça privada que GitHub et dona a *Settings →
+  Emails* (acaba en `@users.noreply.github.com`).
 - `core.editor notepad` fa que, quan Git necessiti que escriguis un
   missatge, obri el Bloc de notes. Escriu el missatge, desa i **tanca** la
   finestra: fins que no la tanquis, Git espera.

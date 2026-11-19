@@ -23,8 +23,8 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-REPOSITORI_GUIA = "gitlab.com/fp-dev-academy/git-rocinante"
-URL_GUIA_SSH = "git@gitlab.com:fp-dev-academy/git-rocinante.git"
+REPOSITORI_GUIA = "github.com/fp-dev-academy/git-rocinante"
+URL_GUIA_SSH = "git@github.com:fp-dev-academy/git-rocinante.git"
 
 # L'omple el generador amb tots els tags del curs.
 TAGS_DEL_CURS: tuple[str, ...] = ()
@@ -270,12 +270,12 @@ def verifica_pas_00(repo: Path) -> list[Resultat]:
                 "origin apunta al teu fork, no al repositori guia",
                 "Has clonat el repositori guia? Vegeu PISTES.md: git remote set-url origin ..."),
         criteri(es_ssh(origin), "origin fa servir SSH (git@...)",
-                "git remote set-url origin git@gitlab.com:<usuari>/git-rocinante.git"),
+                "git remote set-url origin git@github.com:<usuari>/git-rocinante.git"),
         criteri(normalitza_url(upstream) == REPOSITORI_GUIA,
                 "upstream apunta al repositori guia",
                 f"git remote add upstream {URL_GUIA_SSH}"),
         criteri(not falten, "hi ha tots els tags del curs en local",
-                f"Falten {', '.join(falten)}. Prova: git fetch origin --tags"),
+                f"Falten {', '.join(falten)}. Prova: git fetch upstream --tags"),
         criteri(sys.version_info >= (3, 12),
                 f"Python 3.12 o superior (tens {sys.version.split()[0]})",
                 "Instal·la una versió de Python més recent."),
@@ -530,7 +530,7 @@ def verifica_pas_07(repo: Path) -> list[Resultat]:
         remot = None
     if remot is None or remot.returncode != 0:
         return [criteri(False, "es pot connectar amb origin",
-                        "Comprova la connexió i la clau SSH: ssh -T git@gitlab.com")]
+                        "Comprova la connexió i la clau SSH: ssh -T git@github.com")]
     a_origin = {}
     for linia in remot.stdout.splitlines():
         hash_, ref = linia.split()

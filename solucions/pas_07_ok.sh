@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pas 07 - resolució correcta: puja totes les branques amb seguiment.
 set -euo pipefail
-# Simula el fork de GitLab amb un repositori bare local, que fa d'origin.
+# Simula el fork de GitHub amb un repositori bare local, que fa d'origin.
 FORK="$(pwd)/../fork.git"
 git clone --quiet --bare "$(git remote get-url origin)" "$FORK"
 git remote set-url origin "$FORK"

@@ -15,10 +15,10 @@ python verifica.py 07
 ## `git push` diu `Permission denied (publickey)` o no es pot connectar
 
 ```bash
-ssh -T git@gitlab.com
+ssh -T git@github.com
 ```
 
-Ha de respondre `Welcome to GitLab`. Si no, revisa la clau SSH (vegeu les
+Ha de respondre `Hi <usuari>! You've successfully authenticated`. Si no, revisa la clau SSH (vegeu les
 pistes del pas 00).
 
 ## `git push` diu `rejected` o `fetch first`
@@ -49,13 +49,14 @@ L'has pujada sense `-u`. Torna-la a pujar amb seguiment:
 git push -u origin treball/pas-05
 ```
 
-## La merge request apunta al repositori de la flota
+## La pull request apunta al repositori de la flota
 
-A *Target branch*, canvia el projecte per `<usuari>/git-rocinante`. Si ja
-l'has creada, tanca-la (*Close merge request*) i obre'n una de nova.
+A *base repository*, tria `<usuari>/git-rocinante`. Si ja l'has creada,
+tanca-la (*Close pull request*) i obre'n una de nova. No passa res: la flota
+no la fusionarà.
 
-## L'altra persona no pot comentar la merge request
+## L'altra persona no pot comentar la pull request
 
-El teu fork ha de ser visible per a aquesta persona. Comprova-ho a
-*Settings → General → Visibility*, o afegeix-la com a membre del projecte
-amb el rol *Reporter*.
+El fork d'un repositori públic és públic: qualsevol persona amb un compte de
+GitHub hi pot comentar. Comprova que ha iniciat sessió i que li has passat
+l'enllaç de la PR del teu fork, no el de la flota.

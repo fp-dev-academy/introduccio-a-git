@@ -1,7 +1,7 @@
 # git-rocinante — Curs introductori de Git (DAM2)
 
 Curs pràctic de Git per terminal per a alumnat de 2n de CFGS DAM. L'alumnat fa un fork d'un
-repositori guia a GitLab i avança pas a pas: cada pas és un tag (`pas-NN`) amb un repte que
+repositori guia a GitHub i avança pas a pas: cada pas és un tag (`pas-NN`) amb un repte que
 resol al terminal i que comprova `verifica.py`. Fil narratiu: el diari de bord de la
 Rocinante (The Expanse).
 
@@ -14,7 +14,7 @@ siguin.
 | Repositori | Visibilitat | Contingut |
 |---|---|---|
 | `fp-dev-academy/introduccio-a-git` (aquest) | Públic | Generador, verificador, solucions, tests, especificació |
-| `fp-dev-academy/git-rocinante` | Públic a gitlab.com | **Generat** pel generador. L'alumnat en fa fork. **Mai s'edita a mà.** |
+| `fp-dev-academy/git-rocinante` | Públic a github.com | **Generat** pel generador. L'alumnat en fa fork. **Mai s'edita a mà.** |
 
 ## Estructura d'aquest repositori
 
@@ -52,9 +52,10 @@ tests/
   `PISTES.md`, `ORDRES.md` ni `verifica.py`.** Els conflictes només han d'aparèixer on l'especificació diu.
 - `build.py` és idempotent: esborra i recrea el directori de sortida.
 - El generador **no** fa push. La publicació la fa el docent manualment, seguint
-  `PROVA-MANUAL.md` (secció «Si alguna cosa falla»). A `git-rocinante`, `main` està
-  protegida: per republicar amb `--force` cal activar temporalment *Allowed to force push*.
-  Si no, GitLab rebutja les branques però sí que actualitza els tags.
+  `PROVA-MANUAL.md` (secció «Si alguna cosa falla»). Si `main` té una regla de protecció,
+  per republicar amb `--force` cal desactivar-la temporalment.
+- El fork s'ha de fer **sense** *Copy the `main` branch only*: si no, no copia cap tag ni
+  les branques `tripulacio/*` (comprovat el 2026-11-19).
 
 ## Regles de `verifica.py`
 

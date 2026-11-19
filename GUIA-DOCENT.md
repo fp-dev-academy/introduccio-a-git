@@ -40,17 +40,19 @@ alias python=python3                                   # els enunciats diuen pyt
 
 Després tens dues opcions per al repositori:
 
-- **Amb GitLab (recomanat, com l'alumnat):** fes el fork de
-  `fp-dev-academy/git-rocinante` al teu espai de noms i clona'l per SSH
-  (`git clone git@gitlab.com:<usuari>/git-rocinante.git`). El pas 07 hi
-  crearà branques i una merge request; en acabar, esborra el fork.
+- **Amb GitHub (recomanat, com l'alumnat):** fes el fork de
+  `fp-dev-academy/git-rocinante` al teu compte, **desmarcant *Copy the
+  `main` branch only***, i clona'l per SSH
+  (`git clone git@github.com:<usuari>/git-rocinante.git`). El pas 07 hi
+  crearà branques i una pull request; en acabar, esborra el fork. Un compte
+  només pot tenir un fork de cada repositori.
 - **Sense xarxa:** genera el repositori i fes-ne un clon local. Els passos
   01–06 funcionen igual; el 00 i el 07 només es poden simular.
 
   ```bash
   python3 ~/gitLab/fp-dev-academy/introduccio-a-git/generador/build.py --out ~/assaig-rocinante/guia
   git clone ~/assaig-rocinante/guia git-rocinante && cd git-rocinante
-  git remote set-url origin git@gitlab.com:provador/git-rocinante.git
+  git remote set-url origin git@github.com:provador/git-rocinante.git
   ```
 
 Tingues obert al costat el `REPTE.md` de cada pas: aquesta guia no el
@@ -69,7 +71,7 @@ més.
 
 ### Pas 00 · Embarcament (10', millor com a feina prèvia)
 
-- **Idea clau:** un *fork* és una còpia teva a GitLab; `origin` és el teu
+- **Idea clau:** un *fork* és una còpia teva a GitHub; `origin` és el teu
   fork i `upstream`, el repositori original.
 - **Què es comprova:** nom, correu i editor configurats; `origin` per SSH i
   que no sigui el repositori guia; `upstream` existeix; hi ha els 9 tags;
@@ -80,7 +82,11 @@ més.
   `8 de 8`.
 - **A l'aula:** el problema típic no és git, és l'entorn (clau SSH, `python`
   que no respon a Git Bash). Per això convé que arribin amb el pas 00 fet i
-  amb `ssh -T git@gitlab.com` funcionant.
+  amb `ssh -T git@github.com` funcionant.
+- **Error típic de GitHub:** fer el fork amb *Copy the `main` branch only*
+  marcada. El fork arriba sense cap tag ni les branques `tripulacio/*`.
+  `verifica.py 00` ho detecta, i `git fetch upstream --tags` ho resol; al
+  pas 05 poden fer merge de `upstream/tripulacio/*`.
 
 ### Pas 01 · Primera entrada al diari (10')
 
@@ -192,24 +198,24 @@ més.
 ### Pas 07 · Informe a la flota (15')
 
 - **Idea clau:** `push -u` puja una branca i la deixa enllaçada amb la
-  remota; la revisió es fa amb una merge request.
-- **Què fan:** `git push -u origin --all`, obren una merge request **dins
-  del propi fork** de `treball/pas-05` cap a `main` (GitLab proposa per
+  remota; la revisió es fa amb una pull request.
+- **Què fan:** `git push -u origin --all`, obren una pull request **dins
+  del propi fork** de `treball/pas-05` cap a `main` (GitHub proposa per
   defecte el repositori guia: cal canviar-ho) i algú hi comenta una línia.
 - **Què es comprova:** cada branca `treball/pas-*` local existeix a `origin`
   amb el mateix commit, i `treball/pas-05` té upstream. Abans del push,
   `0 de 8`; després, `8 de 8`.
-- **El que no es pot comprovar en local:** la merge request i el comentari.
-  Es revisen a GitLab.
+- **El que no es pot comprovar en local:** la pull request i el comentari.
+  Es revisen a GitHub.
 
 ## 3. A l'aula
 
 **Abans de la sessió**
 
-- `git-rocinante` ha de ser **públic**: si és privat, qui no és membre del
-  grup no el veu ni en pot fer el fork.
+- `git-rocinante` ha de ser **públic**: si és privat, qui no és membre de
+  l'organització no el veu ni en pot fer el fork.
 - Encarregar el pas 00 com a feina prèvia, amb `python verifica.py 00` en
-  `8 de 8` i `ssh -T git@gitlab.com` saludant-los pel nom d'usuari.
+  `8 de 8` i `ssh -T git@github.com` saludant-los pel nom d'usuari.
 - Tenir a mà les respostes de l'apartat 2 i `ORDRES.md` (la xuleta).
 
 **Durant la sessió (110' + 10' de marge)**
@@ -223,7 +229,7 @@ més.
 | 50–60' | 04 | Han vist `Fast-forward` |
 | 60–80' | 05 | Test en verd després del merge |
 | 80–95' | 06 | `Temps de trajecte: 1.00 h` (si es va tard, se salta) |
-| 95–110' | 07 | Merge request oberta al seu fork |
+| 95–110' | 07 | Pull request oberta al seu fork |
 
 - Els passos 00–02 donen les ordres completes; el 03 i el 04, ordres i
   objectiu; del 05 en endavant, només l'objectiu. A partir del 05 conviden
@@ -233,8 +239,8 @@ més.
 
 **Després de la sessió**
 
-- Revisar les merge requests (el pas 07 és l'únic resultat visible a
-  GitLab).
+- Revisar les pull requests (el pas 07 és l'únic resultat visible a
+  GitHub).
 - Els passos 08–11 (ampliació autònoma) encara no estan publicats.
 
 ## 4. Troballes de l'assaig (2026-11-18)

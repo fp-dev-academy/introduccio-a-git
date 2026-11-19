@@ -34,7 +34,7 @@ de la Naomi i després la de l'Amos**, de manera que
 
 ### Branques remotes
 
-Les branques de la tripulació són al teu fork, a GitLab. Les tens com a
+Les branques de la tripulació són al teu fork, a GitHub. Les tens com a
 **branques remotes**: còpies de només lectura de com estaven a `origin`
 l'última vegada que hi vas parlar.
 
@@ -44,6 +44,8 @@ git log --oneline --graph --all -6
 ```
 
 Pots fer merge directament d'una branca remota: `git merge origin/<branca>`.
+Si no veus les branques `origin/tripulacio/*`, el teu fork només té `main`:
+fes `git fetch upstream` i usa `upstream/<branca>`.
 
 ### El merge de tres vies
 
