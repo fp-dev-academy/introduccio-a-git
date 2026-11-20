@@ -14,7 +14,7 @@ L'ordre recomanat és:
 
 Totes les sortides d'aquesta guia s'han obtingut executant les ordres
 (2026-11-18, macOS, Python 3.15.2). Els hashos corresponen al repositori
-generat amb `pas-07` = `74e5a15`.
+generat amb `pas-07` = `50f06f6`.
 
 ## 1. Preparar l'assaig
 
@@ -111,15 +111,15 @@ més.
 - **Què fan:** troben qui va esborrar `rumb_emergencia()` i en quin commit
   es va afegir, ho escriuen a `respostes/pas-02.txt`, visiten aquell commit,
   tornen i recuperen la funció.
-- **Respostes:** `autor_esborrat=Amos Burton` (commit `609551f refactor:
-  neteja codi mort`) i `hash_afegit=dc6a2c1` (`feat: afegeix el rumb
+- **Respostes:** `autor_esborrat=Amos Burton` (commit `87819d3 refactor:
+  neteja codi mort`) i `hash_afegit=288af8b` (`feat: afegeix el rumb
   d'emergència`). S'accepta també només `amos`, i qualsevol prefix de 7 o més
   caràcters del hash.
 - **La drecera:** `git log --oneline -S rumb_emergencia --
   rocinante/navegacio.py` mostra exactament aquests dos commits.
 - **Error típic:** posar el hash del commit que la va esborrar. La pista ho
   diu: «del commit que va AFEGIR la funció, no del que la va esborrar».
-- **A l'aula:** el `git status` en detached HEAD (`HEAD detached at dc6a2c1`)
+- **A l'aula:** el `git status` en detached HEAD (`HEAD detached at 288af8b`)
   espanta. Explica que no és un error: és mirar el passat sense estar a cap
   branca, i `git switch -` hi torna.
 
@@ -130,7 +130,7 @@ més.
   desfà (per al que ja és compartit).
 - **Què fan:** practiquen `restore --staged` i `restore` (no es verifica),
   corregeixen el missatge `asdf` amb `--amend` i fan el revert del commit
-  `24b8ee6 feat: millora la sortida de la CLI`, que imprimeix
+  `3e6b965 feat: millora la sortida de la CLI`, que imprimeix
   `AMOS WAS HERE`.
 - **L'ordre importa:** primer l'`--amend`, després el revert. Si es fa al
   revés, el verificador ho detecta (`5 de 7`) i dona la sortida:
@@ -185,9 +185,10 @@ més.
   `10.00 h` i hauria de dir `1.00 h`.
 - **Què fan:** `git bisect start pas-06 v1.0` i
   `git bisect run python tests/test_navegacio.py`. Git acaba amb
-  `9f0fd88... is the first bad commit` (`refactor: unifica conversions
-  d'unitats`, de la Naomi: Alex tenia raó). Després, `git bisect reset`,
-  `culpable=9f0fd88` a `respostes/pas-06.txt`, revert del culpable i commit.
+  `b03a28d... is the first bad commit` (`refactor: unifica conversions
+  d'unitats`, de la Naomi: Alex tenia raó). Des de Git 2.56, el missatge
+  és `is the first 'bad' commit`, amb cometes. Després, `git bisect reset`,
+  `culpable=b03a28d` a `respostes/pas-06.txt`, revert del culpable i commit.
 - **Comprovació final:** el trajecte torna a donar `1.00 h` i el verificador
   dona `5 de 5`.
 - **Atenció:** si executen `python verifica.py 06` **abans** de
