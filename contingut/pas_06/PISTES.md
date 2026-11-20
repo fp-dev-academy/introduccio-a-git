@@ -29,8 +29,9 @@ git bisect run python tests/test_navegacio.py
 
 ## On és el hash del culpable?
 
-Al final, `git bisect` escriu `<hash> is the first bad commit`, amb el
-missatge i el diff del commit. Els 7 primers caràcters del hash són la
+Al final, `git bisect` escriu `<hash> is the first bad commit` (a les
+versions més noves de Git, `is the first 'bad' commit`), amb el missatge i
+el diff del commit. Els 7 primers caràcters del hash són la
 resposta.
 
 ## Ja tinc el culpable. I ara?

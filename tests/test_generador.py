@@ -367,7 +367,8 @@ class TestBuild(unittest.TestCase):
             clon = self._clon(Path(directori))
             git(clon, "bisect", "start", "pas-06", "v1.0")
             sortida = git(clon, "bisect", "run", sys.executable, "tests/test_navegacio.py")
-            self.assertIn(f"{culpable} is the first bad commit", sortida)
+            # Git 2.56 hi posa cometes («first 'bad' commit»); les anteriors, no.
+            self.assertRegex(sortida, rf"{culpable} is the first '?bad'? commit")
 
     def test_pas_06_alex_fa_el_revert_just_despres_del_tag(self) -> None:
         culpable = self._rang_pas_06()[8]

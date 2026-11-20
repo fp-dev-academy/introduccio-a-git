@@ -3,11 +3,14 @@
 set -euo pipefail
 git switch --quiet -c treball/pas-06 pas-06
 git bisect start pas-06 v1.0 > /dev/null
-while true; do
+# Git 2.56 escriu «is the first 'bad' commit»; les versions anteriors, sense
+# cometes. El límit evita un bucle infinit si el missatge torna a canviar.
+for _ in $(seq 1 20); do
     if "$PYTHON" tests/test_navegacio.py > /dev/null 2>&1; then veredicte=good; else veredicte=bad; fi
     resultat=$(git bisect "$veredicte")
-    case "$resultat" in *"is the first bad commit"*) break ;; esac
+    case "$resultat" in *"is the first bad commit"*|*"is the first 'bad' commit"*) break ;; esac
 done
+git bisect log | grep -q "^# first 'bad' commit\|^# first bad commit"
 CULPABLE=$(git rev-parse --short=7 refs/bisect/bad)
 git bisect reset > /dev/null 2>&1
 mkdir -p respostes
