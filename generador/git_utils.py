@@ -31,6 +31,11 @@ CONFIGURACIO = {
     "tag.gpgsign": "false",
     "init.defaultBranch": "main",
     "core.autocrlf": "false",
+    # Sense manteniment automàtic: git (p. ex. el 2.54 d'Apple) llança
+    # `git maintenance run --auto --detach`, que fa un repack en segon pla i
+    # pot escriure a .git mentre build.py l'esborra per regenerar-lo.
+    "maintenance.auto": "false",
+    "gc.auto": "0",
 }
 
 
